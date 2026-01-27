@@ -27,6 +27,10 @@ import { generateConfigFromPrompt } from '../services/geminiService';
 import LivePowerGauge from './LivePowerGauge';
 import ROICalculator from './ROICalculator';
 import ShareModal from './ShareModal';
+import InsurancePartnerIntegration from './InsurancePartnerIntegration';
+import ShedTetherHardwarePortal from './ShedTetherHardwarePortal';
+import RegionalExpansionDashboard from './RegionalExpansionDashboard';
+import AdvancedAnalyticsDashboard from './AdvancedAnalyticsDashboard';
 
 const ShowroomCard: React.FC<{ item: typeof SHOWROOM_ITEMS[0], onSelect: () => void }> = ({ item, onSelect }) => (
     <div
@@ -111,6 +115,10 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
     const [showShare, setShowShare] = useState(false);
     const [showNudge, setShowNudge] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
+    const [showInsurance, setShowInsurance] = useState(false);
+    const [showHardware, setShowHardware] = useState(false);
+    const [showRegional, setShowRegional] = useState(false);
+    const [showAnalytics, setShowAnalytics] = useState(false);
     const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
     const { user } = useAuthenticator((context) => [context.user]);
@@ -204,7 +212,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
     }, [spec, detailedCosts]);
 
     const powerMetrics = useMemo(() => {
-        const max = spec.electricalTier === '20A' ? 20 : (spec.electricalTier === '30A' ? 30 : 15);
+        const max = spec.addons.power_50a ? 50 : spec.addons.power_30a ? 30 : spec.addons.power_20a ? 20 : 15;
         let baseLoad = 2.0; // Minimal idle load
         if (spec.addons.ac) baseLoad += 8.5;
         if (spec.addons.workbench) baseLoad += 4.0;
@@ -214,7 +222,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
             maxAmps: max,
             loadFactor: Math.max(0.1, Math.min(0.95, baseLoad / max))
         };
-    }, [spec.electricalTier, spec.addons]);
+    }, [spec.addons]);
 
     const downloadSpec = () => {
         const content = `
@@ -498,6 +506,63 @@ Total: $${costs.total.toLocaleString()}
                             </section>
 
                             <section>
+                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Advanced Features</label>
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={() => setShowInsurance(true)}
+                                        className="w-full p-5 rounded-2xl border border-green-500/30 text-left transition-all hover:bg-green-500/10 hover:border-green-500"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-green-400">Insurance Verified</span>
+                                                <span className="text-[9px] text-white/40 mt-1">Qualify for discounts</span>
+                                            </div>
+                                            <span className="text-xl">🛡️</span>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => setShowHardware(true)}
+                                        className="w-full p-5 rounded-2xl border border-orange-500/30 text-left transition-all hover:bg-orange-500/10 hover:border-orange-500"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-orange-400">Shed Tether Hardware</span>
+                                                <span className="text-[9px] text-white/40 mt-1">Power specs & calculations</span>
+                                            </div>
+                                            <span className="text-xl">⚡</span>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => setShowRegional(true)}
+                                        className="w-full p-5 rounded-2xl border border-cyan-500/30 text-left transition-all hover:bg-cyan-500/10 hover:border-cyan-500"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">Regional Network</span>
+                                                <span className="text-[9px] text-white/40 mt-1">Community nodes & expansion</span>
+                                            </div>
+                                            <span className="text-xl">🌐</span>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => setShowAnalytics(true)}
+                                        className="w-full p-5 rounded-2xl border border-blue-500/30 text-left transition-all hover:bg-blue-500/10 hover:border-blue-500"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Financial Analytics</span>
+                                                <span className="text-[9px] text-white/40 mt-1">ROI & maintenance forecasts</span>
+                                            </div>
+                                            <span className="text-xl">💰</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </section>
+
+                            <section>
                                 <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Addons</label>
                                 <div className="space-y-2">
                                     {UPGRADES.map(u => (
@@ -661,6 +726,42 @@ Total: $${costs.total.toLocaleString()}
                         </button>
                         <button onClick={() => setShowNudge(false)} className="text-white/20 hover:text-white text-xl">×</button>
                     </div>
+                </div>
+            )}
+            {showInsurance && (
+                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                    <InsurancePartnerIntegration
+                        spec={spec}
+                        costs={costs}
+                        onClose={() => setShowInsurance(false)}
+                    />
+                </div>
+            )}
+
+            {showHardware && (
+                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                    <ShedTetherHardwarePortal
+                        spec={spec}
+                        onClose={() => setShowHardware(false)}
+                    />
+                </div>
+            )}
+
+            {showRegional && (
+                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                    <RegionalExpansionDashboard
+                        onClose={() => setShowRegional(false)}
+                    />
+                </div>
+            )}
+
+            {showAnalytics && (
+                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                    <AdvancedAnalyticsDashboard
+                        spec={spec}
+                        costs={costs}
+                        onClose={() => setShowAnalytics(false)}
+                    />
                 </div>
             )}
         </div >
