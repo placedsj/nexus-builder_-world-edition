@@ -83,7 +83,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         renderMode: '3D',
         inventory: [],
         landscape: [],
-        addons: { ramp: false, solar: false, ac: false, loft: false, workbench: false, shedLoo: false },
+        addons: { ramp: false, solar: false, ac: false, loft: false, workbench: false, shedLoo: false, power_20a: false, power_30a: false, power_50a: false, shedcare: false },
         pitch: 6,
         wallColor: '#f8fafc',
         trimColor: '#334155',
