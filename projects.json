@@ -1,0 +1,127 @@
+{
+  "status": "success",
+  "result": [
+    {
+      "projectId": "atlantic-seo-blog",
+      "projectNumber": "1096767876318",
+      "displayName": "ATLANTIC SEO BLOG",
+      "name": "projects/atlantic-seo-blog",
+      "resources": {
+        "hostingSite": "atlantic-seo-blog"
+      },
+      "state": "ACTIVE",
+      "etag": "1_64bb7b4c-f29f-4a62-b649-e493d85163b5"
+    },
+    {
+      "projectId": "familyverse-yt5vs",
+      "projectNumber": "1040928765696",
+      "displayName": "Harper's Place",
+      "name": "projects/familyverse-yt5vs",
+      "resources": {
+        "hostingSite": "familyverse-yt5vs",
+        "realtimeDatabaseInstance": "familyverse-yt5vs-default-rtdb"
+      },
+      "state": "ACTIVE",
+      "etag": "1_e71270b7-2bb0-4203-961b-dde693e8aadf"
+    },
+    {
+      "projectId": "lunai-9g2ss",
+      "projectNumber": "81935706148",
+      "displayName": "LUNAi",
+      "name": "projects/lunai-9g2ss",
+      "resources": {
+        "hostingSite": "lunai-9g2ss"
+      },
+      "state": "ACTIVE",
+      "etag": "1_74bbfd4e-7061-4b6c-a6ec-edb2ff1f7b7a"
+    },
+    {
+      "projectId": "placed-hh-92746999-f6b07",
+      "projectNumber": "840418345321",
+      "displayName": "Firebase app",
+      "name": "projects/placed-hh-92746999-f6b07",
+      "resources": {
+        "hostingSite": "placed-hh-92746999-f6b07"
+      },
+      "state": "ACTIVE",
+      "etag": "1_5ab28e01-cb96-494c-a561-d3abca93e1a6"
+    },
+    {
+      "projectId": "roofright-nb",
+      "projectNumber": "560485052126",
+      "displayName": "RoofRight NB",
+      "name": "projects/roofright-nb",
+      "resources": {
+        "hostingSite": "roofright-nb"
+      },
+      "state": "ACTIVE",
+      "etag": "1_337a94e3-ddd8-4f0d-93c3-2237381fdb82"
+    },
+    {
+      "projectId": "roofright-onl6d",
+      "projectNumber": "743192386506",
+      "displayName": "Paul'sRoofing",
+      "name": "projects/roofright-onl6d",
+      "resources": {
+        "hostingSite": "roofright-onl6d"
+      },
+      "state": "ACTIVE",
+      "etag": "1_7e5f37cd-86e4-4f0e-acf8-7e1fb06eb1e4"
+    },
+    {
+      "projectId": "sample-firebase-ai-app-e0ce7",
+      "projectNumber": "430985791939",
+      "displayName": "Sample Firebase AI App",
+      "name": "projects/sample-firebase-ai-app-e0ce7",
+      "resources": {
+        "hostingSite": "sample-firebase-ai-app-e0ce7"
+      },
+      "state": "ACTIVE",
+      "etag": "1_60b260d0-aa64-475d-a087-8328371a71c0"
+    },
+    {
+      "projectId": "studio-6081560334-7bcec",
+      "projectNumber": "255256374354",
+      "displayName": "Firebase app",
+      "name": "projects/studio-6081560334-7bcec",
+      "resources": {
+        "hostingSite": "studio-6081560334-7bcec"
+      },
+      "state": "ACTIVE",
+      "etag": "1_6d3a87ad-d317-4c2b-b1e9-1dabe67ba763"
+    },
+    {
+      "projectId": "studio-8203745595-2434f",
+      "projectNumber": "100085315657",
+      "displayName": "Firebase app",
+      "name": "projects/studio-8203745595-2434f",
+      "resources": {
+        "hostingSite": "studio-8203745595-2434f"
+      },
+      "state": "ACTIVE",
+      "etag": "1_9e29d26b-a3eb-41b7-911f-9769ba3a6b06"
+    },
+    {
+      "projectId": "warm-shade-485608-v0",
+      "projectNumber": "388003580723",
+      "displayName": "My Project 64839",
+      "name": "projects/warm-shade-485608-v0",
+      "resources": {
+        "hostingSite": "warm-shade-485608-v0"
+      },
+      "state": "ACTIVE",
+      "etag": "1_d736ec3e-8f10-409c-aa29-d94b32eed237"
+    },
+    {
+      "projectId": "yuletide-lights",
+      "projectNumber": "739027061646",
+      "displayName": "Yuletide Lights",
+      "name": "projects/yuletide-lights",
+      "resources": {
+        "hostingSite": "yuletide-lights"
+      },
+      "state": "ACTIVE",
+      "etag": "1_66952633-584a-4a26-a994-d2a47b199067"
+    }
+  ]
+}

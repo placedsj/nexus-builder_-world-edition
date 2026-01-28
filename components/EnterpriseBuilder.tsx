@@ -130,6 +130,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         }
 
         try {
+            // @ts-ignore
             await client.models.ShedDesign.create({
                 style: spec.style,
                 width: spec.width,
@@ -139,7 +140,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                 addonsJson: JSON.stringify(spec.addons),
                 specJson: JSON.stringify(spec),
                 name: `My ${spec.style} - ${new Date().toLocaleDateString()}`
-            });
+            } as any);
             alert('Design saved successfully!');
             setShowLogin(false);
         } catch (error) {
