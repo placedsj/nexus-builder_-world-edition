@@ -68,34 +68,39 @@ const AdminDashboard: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white p-10 font-sans selection:bg-cyan-500">
+        <div className="min-h-screen bg-slate-950 text-white p-10 font-sans selection:bg-blue-500">
             <header className="flex justify-between items-end mb-16 max-w-7xl mx-auto">
-                <div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-500 mb-4 block">Command Center</span>
-                    <h1 className="text-6xl font-black uppercase tracking-tighter">Placed <span className="text-white/20">Admin</span></h1>
+                <div className="flex items-center gap-6">
+                    <div className="w-20 h-20 rounded-3xl glass p-1 border-blue-500/20 overflow-hidden">
+                        <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-full h-full object-cover animate-pulse" alt="LUNAI" />
+                    </div>
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500 mb-4 block">LUNAI ARCHITECT CORE</span>
+                        <h1 className="text-6xl font-black uppercase tracking-tighter">Management <span className="text-white/20">Hub</span></h1>
+                    </div>
                 </div>
                 <div className="text-right">
-                    <div className="text-3xl font-black text-white mb-1">$69,400</div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-green-500">Active Pipeline Value</span>
+                    <div className="text-3xl font-black text-white mb-1 shadow-blue-500/20 text-glow">$69,400</div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Active Pipeline Value</span>
                 </div>
             </header>
 
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 mb-20">
-                <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem]">
+                <div className="glass border-white/10 p-8 rounded-[2rem]">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Total Active Builds</h3>
                     <div className="text-5xl font-black text-white">4</div>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem]">
+                <div className="glass border-white/10 p-8 rounded-[2rem]">
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Avg. Ticket Size</h3>
                     <div className="text-5xl font-black text-white">$17.3k</div>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] lg:col-span-2 relative overflow-hidden group">
+                <div className="glass border-white/10 p-8 rounded-[2rem] lg:col-span-2 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <span className="text-6xl">🤖</span>
+                        <span className="text-6xl animate-float">💠</span>
                     </div>
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-2">LUNAI Insight</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">LUNAI System Insight</h3>
                     <p className="text-lg font-medium text-white/80 leading-relaxed max-w-lg">
-                        "The new <span className="text-white font-bold">$1,850 Comfort Kit</span> has seen a 45% lift in conversion since prioritizing the 'Plug-In Lifestyle' messaging. ShedCare adoption is at 60%."
+                        "The new <span className="text-white font-bold">$1,850 Comfort Kit</span> has seen a 45% lift in conversion since prioritizing architectural optimization messaging. ShedCare adoption is at 60%."
                     </p>
                 </div>
             </div>

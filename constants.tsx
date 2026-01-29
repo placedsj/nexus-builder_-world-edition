@@ -21,13 +21,31 @@ export const COMPARISON_DATA = {
 
 export const SHOWROOM_ITEMS = [
     {
+        id: 'modern-studio-12-20',
+        style: 'Modern Studio' as ShedStyleType,
+        title: "12' x 20' Modern Studio",
+        label: "STATE-OF-THE-ART",
+        description: "The LUNAI flagship. Floor-to-ceiling glass, black metal siding, and architectural precision. Perfect for a premium backyard office or guest studio.",
+        image: "/brain/d00a1654-b7a4-4b43-a697-b3a763181613/modern_studio_render_1769653613139.png",
+        badge: "Architect Core V7.2 Pre-Configured"
+    },
+    {
         id: 'lofted-12-28',
         style: 'Lofted Barn' as ShedStyleType,
         title: "12' x 28' Lofted Barn",
         label: "STORAGE SUPERSTAR",
-        description: "The ultimate flagship. Massive footprint, double lofts, and Canadian-tough construction. Ready to become a heated workshop, backyard office, or plug-in guest space.",
-        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=3432&auto=format&fit=crop",
-        badge: "Power Ready: Ideal for 30A Workshop Kit"
+        description: "Massive volume with traditional charm. Upgraded with premium shingles and black-on-white trim. Double lofts included.",
+        image: "/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lofted_barn_render_1769653641837.png",
+        badge: "Heavy Load: 30A Comfort Kit Ready"
+    },
+    {
+        id: 'aframe-10-18',
+        style: 'A-Frame' as ShedStyleType,
+        title: "10' x 18' A-Frame Classic",
+        label: "BACKYARD MVP",
+        description: "Natural cedar finish with iconic steeply pitched roof. A cozy retreat or equipment flagship for the discerning homeowner.",
+        image: "/brain/d00a1654-b7a4-4b43-a697-b3a763181613/a_frame_render_1769653627530.png",
+        badge: "Natural Series: Cedar Edition"
     },
     {
         id: 'quaker-10-16',
@@ -37,24 +55,6 @@ export const SHOWROOM_ITEMS = [
         description: "A fan favorite with saltbox-style asymmetric roof. Perfect for keeping your yard neat while adding a touch of classic charm.",
         image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=2574&auto=format&fit=crop",
         badge: "STARTING $7,975"
-    },
-    {
-        id: 'aframe-10-18',
-        style: 'A-Frame' as ShedStyleType,
-        title: "10' x 18' A-Frame Classic",
-        label: "BACKYARD MVP",
-        description: "Standard vertical framing with a sharp peak. Solid, reliable, and big enough for everything from mowers to gnomes.",
-        image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=2574&auto=format&fit=crop",
-        badge: "STARTING $6,531"
-    },
-    {
-        id: 'utility-10-20',
-        style: 'Utility' as ShedStyleType,
-        title: "10' x 20' Utility Shed",
-        label: "ORGANIZED BLISS",
-        description: "Twice as organized as your junk drawer. The efficient workspace for sports gear and gardening tools.",
-        image: "https://images.unsplash.com/photo-1525936534217-15b9c14828dd?q=80&w=2574&auto=format&fit=crop",
-        badge: "STARTING $9,185"
     }
 ];
 

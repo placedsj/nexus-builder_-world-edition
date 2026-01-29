@@ -1,7 +1,5 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
-import { client } from '../lib/amplify';
 import WeatherOverlay from './WeatherOverlay';
 import ShedVisualizer from './ShedVisualizer';
 import {
@@ -31,6 +29,7 @@ import InsurancePartnerIntegration from './InsurancePartnerIntegration';
 import ShedTetherHardwarePortal from './ShedTetherHardwarePortal';
 import RegionalExpansionDashboard from './RegionalExpansionDashboard';
 import AdvancedAnalyticsDashboard from './AdvancedAnalyticsDashboard';
+import { jsPDF } from 'jspdf';
 
 const ShowroomCard: React.FC<{ item: typeof SHOWROOM_ITEMS[0], onSelect: () => void }> = ({ item, onSelect }) => (
     <div
@@ -114,39 +113,18 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
     const [showROI, setShowROI] = useState(false);
     const [showShare, setShowShare] = useState(false);
     const [showNudge, setShowNudge] = useState(false);
-    const [showLogin, setShowLogin] = useState(false);
     const [showInsurance, setShowInsurance] = useState(false);
     const [showHardware, setShowHardware] = useState(false);
     const [showRegional, setShowRegional] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
     const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
-    const { user } = useAuthenticator((context) => [context.user]);
 
     const handleSave = async () => {
-        if (!user) {
-            setShowLogin(true);
-            return;
-        }
-
-        try {
-            // @ts-ignore
-            await client.models.ShedDesign.create({
-                style: spec.style,
-                width: spec.width,
-                depth: spec.depth,
-                wallColor: spec.wallColor,
-                sidingType: spec.sidingType,
-                addonsJson: JSON.stringify(spec.addons),
-                specJson: JSON.stringify(spec),
-                name: `My ${spec.style} - ${new Date().toLocaleDateString()}`
-            } as any);
-            alert('Design saved successfully!');
-            setShowLogin(false);
-        } catch (error) {
-            console.error('Error saving design:', error);
-            alert('Failed to save design. Please try again.');
-        }
+        // AWS Integration removed. Simulating local save.
+        console.log('Design data:', spec);
+        alert('Design saved to local session. (AWS Integration removed)');
     };
 
     // Smart Nudge Logic
@@ -225,29 +203,75 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         };
     }, [spec.addons]);
 
-    const downloadSpec = () => {
-        const content = `
-PLACED ENGINEERED SPECIFICATION
--------------------------------
-Model: ${spec.style}
-Dimensions: ${spec.width}' x ${spec.depth}'
-Siding: ${spec.sidingType === 'lap' ? 'Horizontal Lap' : 'Board & Batten'}
-Wall Color: ${spec.wallColor}
-Addons: ${Object.entries(spec.addons).filter(([_, v]) => v).map(([k, _]) => k).join(', ') || 'None'}
-Power Kit: ${spec.electricalTier || 'None'}
 
-ESTIMATED COSTS
----------------
-Materials: $${costs.material.toLocaleString()}
-Labor: $${costs.labor.toLocaleString()}
-Total: $${costs.total.toLocaleString()}
-        `;
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Placed_Spec_${spec.style.replace(' ', '_')}.txt`;
-        a.click();
+    const downloadSpec = () => {
+        const doc = new jsPDF();
+
+        // Brand Header
+        doc.setFillColor(15, 23, 42); // slate-900
+        doc.rect(0, 0, 210, 40, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.text('PLACED', 20, 20);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('ENGINEERED SPECIFICATION', 20, 28);
+        doc.text(new Date().toLocaleDateString(), 190, 20, { align: 'right' });
+
+        // Content
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(16);
+        doc.text(`Configuration: ${spec.style}`, 20, 60);
+
+        doc.setFontSize(12);
+        doc.text(`Dimensions: ${spec.width}' x ${spec.depth}'`, 20, 75);
+        doc.text(`Siding: ${spec.sidingType === 'lap' ? 'Horizontal Lap' : 'Board & Batten'}`, 20, 85);
+        doc.text(`Wall Color: ${spec.wallColor}`, 20, 95);
+        doc.text(`Power Kit: ${spec.electricalTier || 'None'}`, 20, 105);
+
+        // Addons Box
+        doc.setDrawColor(226, 232, 240); // slate-200
+        doc.rect(20, 115, 170, 40);
+        doc.setFontSize(10);
+        doc.text('SELECTED UPGRADES', 25, 125);
+
+        const activeAddons = Object.entries(spec.addons)
+            .filter(([_, v]) => v)
+            .map(([k, _]) => k.replace(/_/g, ' '));
+
+        doc.setFontSize(9);
+        doc.text(activeAddons.length > 0 ? activeAddons.join(', ') : 'No upgrades selected', 25, 135, { maxWidth: 160 });
+
+        // Pricing Section
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('COST ESTIMATE (CAD)', 20, 175);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text('Materials', 20, 185);
+        doc.text(`$${costs.material.toLocaleString()}`, 190, 185, { align: 'right' });
+
+        doc.text('Labor / Assembly', 20, 195);
+        doc.text(`$${costs.labor.toLocaleString()}`, 190, 195, { align: 'right' });
+
+        doc.setDrawColor(15, 23, 42);
+        doc.line(20, 205, 190, 205);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text('PROJECT TOTAL', 20, 215);
+        doc.text(`$${costs.total.toLocaleString()}`, 190, 215, { align: 'right' });
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184); // slate-400
+        doc.text('Generated via LUNAI Architectural Intelligence. Prices are estimates and subject to site inspection.', 105, 280, { align: 'center' });
+
+        doc.save(`Placed_Spec_${spec.style.replace(' ', '_')}.pdf`);
     };
 
     const handleCommand = async (input: string) => {
@@ -312,7 +336,15 @@ Total: $${costs.total.toLocaleString()}
 
             {spec.renderMode === '3D' && <WeatherOverlay type={weather} time={spec.time} />}
 
-            <div className="w-[420px] bg-black/40 backdrop-blur-3xl border-r border-white/10 flex flex-col z-[60]">
+            {/* Mobile Sidebar Toggle */}
+            <button
+                onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+                className="lg:hidden fixed bottom-10 left-10 z-[300] w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-900/40 border border-blue-400/30 active:scale-95 transition-all"
+            >
+                <span className="text-xl font-black">{showMobileSidebar ? '✕' : '⚙️'}</span>
+            </button>
+
+            <div className={`w-full lg:w-[420px] glass border-r border-white/10 flex flex-col z-[60] fixed lg:relative inset-y-0 left-0 transition-transform duration-500 ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className="flex border-b border-white/10">
                     {['lunai', 'structure', 'metrics'].map((tab) => (
                         <button key={tab} onClick={() => setActivePanelTab(tab as any)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${activePanelTab === tab ? 'text-blue-400 bg-blue-600/10 border-b-2 border-blue-400' : 'text-slate-500 hover:text-slate-300'}`}>
@@ -321,29 +353,44 @@ Total: $${costs.total.toLocaleString()}
                     ))}
                 </div>
 
-                <div className="flex-1 overflow-y-auto no-scrollbar">
+                <div className="flex-1 overflow-y-auto no-scrollbar glass border border-white/5 rounded-[2.5rem] mb-6">
                     {activePanelTab === 'lunai' && (
-                        <div className="p-8 flex flex-col h-full">
+                        <div className="p-8 flex flex-col h-full bg-blue-500/5">
                             <div className="flex-1 space-y-6">
+                                <div className="flex items-center gap-3 p-4 glass rounded-3xl mb-4 border-placed-blue/20">
+                                    <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border border-blue-400/30">
+                                        <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-full h-full object-cover animate-pulse" alt="LUNAI Core" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[9px] font-black text-placed-blue uppercase tracking-widest leading-none mb-1">Architect Core</div>
+                                        <div className="text-sm font-black text-white leading-none">LUNAI v7.2</div>
+                                    </div>
+                                </div>
                                 {chat.map((m, i) => (
                                     <div key={i} className={`flex flex-col ${m.role === 'ai' ? 'items-start' : 'items-end'}`}>
-                                        <div className={`max-w-[90%] p-5 rounded-3xl text-xs font-medium leading-relaxed ${m.role === 'ai' ? 'bg-white/5 border border-white/10 text-slate-200' : 'bg-blue-600 text-white'}`}>
+                                        <div className={`max-w-[90%] p-5 rounded-3xl text-xs font-medium leading-relaxed ${m.role === 'ai' ? 'glass border-placed-blue/20 text-blue-100' : 'bg-placed-blue text-white shadow-lg shadow-blue-900/40'}`}>
                                             {m.text}
                                         </div>
                                     </div>
                                 ))}
-                                {isThinking && <div className="animate-pulse bg-white/5 h-16 w-3/4 rounded-3xl" />}
+                                {isThinking && (
+                                    <div className="flex items-center gap-2 text-blue-500/50 animate-pulse">
+                                        <div className="w-1 h-1 bg-current rounded-full" />
+                                        <div className="w-1 h-1 bg-current rounded-full" />
+                                        <div className="w-1 h-1 bg-current rounded-full" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest ml-2">Simulating Parameters...</span>
+                                    </div>
+                                )}
                                 <div ref={chatEndRef} />
                             </div>
 
                             <div className="mt-4 flex gap-2 flex-wrap">
-                                <button onClick={() => handleCommand("What power options do I have for this size?")} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition-all">What power options?</button>
-                                <button onClick={() => handleCommand("Can I run a heater, PC, and lights on a 30A kit?")} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition-all">Can I run a heater?</button>
-                                <button onClick={() => handleCommand("What's the easiest way to power this without trenching in New Brunswick?")} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition-all">No trenching power?</button>
+                                <button onClick={() => handleCommand("Analyze power load for 30A kit.")} className="px-3 py-1.5 rounded-full glass text-[9px] font-black uppercase tracking-wider text-blue-400 hover:text-white hover:bg-placed-blue/20 transition-all">Optimize Power</button>
+                                <button onClick={() => handleCommand("Run snow load simulation for New Brunswick.")} className="px-3 py-1.5 rounded-full glass text-[9px] font-black uppercase tracking-wider text-blue-400 hover:text-white hover:bg-placed-blue/20 transition-all">Snow Load Sim</button>
                             </div>
 
                             <div className="mt-6">
-                                <input disabled={isThinking} className="w-full bg-white/5 border border-white/10 p-5 rounded-[2rem] text-sm focus:border-blue-500/50 outline-none text-white transition-all" placeholder="Ask LUNAI about Placed designs..." onKeyDown={(e) => { if (e.key === 'Enter' && e.currentTarget.value.trim()) { handleCommand(e.currentTarget.value); e.currentTarget.value = ''; } }} />
+                                <input disabled={isThinking} className="w-full glass p-5 rounded-[2rem] text-sm focus:border-placed-blue/50 outline-none text-white transition-all placeholder:text-white/20" placeholder="Initialize command..." onKeyDown={(e) => { if (e.key === 'Enter' && e.currentTarget.value.trim()) { handleCommand(e.currentTarget.value); e.currentTarget.value = ''; } }} />
                             </div>
                         </div>
                     )}
@@ -644,24 +691,53 @@ Total: $${costs.total.toLocaleString()}
                 </div>
             </div>
 
-            <div className="flex-1 relative flex flex-col items-center justify-center overflow-hidden z-10">
+            <div className="flex-1 relative flex flex-col items-center justify-center overflow-hidden z-10 bg-[radial-gradient(circle_at_50%_50%,_rgba(30,64,175,0.05),_transparent_70%)]">
+                {/* HUD CONTROLS */}
                 <div className="absolute top-8 left-12 right-12 z-50 flex justify-between items-start">
                     <div className="flex gap-4">
-                        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors bg-white/5 backdrop-blur px-6 py-2 rounded-full border border-white/10">← BACK</button>
-                        <button onClick={() => setShowShare(true)} className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 hover:text-white transition-colors bg-cyan-500/10 backdrop-blur px-6 py-2 rounded-full border border-cyan-500/20 hover:bg-cyan-500">SHARE</button>
-                        <button onClick={handleSave} className="text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-green-400 transition-colors bg-green-500/10 backdrop-blur px-6 py-2 rounded-full border border-green-500/20 hover:bg-green-500/20">SAVE</button>
+                        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors glass px-6 py-2 rounded-full">← BACK</button>
+                        <button onClick={() => setShowShare(true)} className="text-[10px] font-black uppercase tracking-[0.2em] text-placed-blue hover:text-white transition-colors bg-placed-blue/10 backdrop-blur px-6 py-2 rounded-full border border-placed-blue/20 hover:bg-placed-blue">SHARE</button>
+                        <button onClick={handleSave} className="text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-placed-emerald transition-colors bg-placed-emerald/10 backdrop-blur px-6 py-2 rounded-full border border-placed-emerald/20 hover:bg-placed-emerald/20">SAVE</button>
                     </div>
-                    <div className="flex items-center gap-2 bg-black/40 backdrop-blur-2xl border border-white/10 p-1.5 rounded-full">
+                    <div className="flex items-center gap-2 glass p-1.5 rounded-full">
                         {(['3D', 'BLUEPRINT'] as RenderMode[]).map(m => (
                             <button key={m} onClick={() => setSpec(s => ({ ...s, renderMode: m }))} className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${spec.renderMode === m ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500 hover:text-white'}`}>{m}</button>
                         ))}
                     </div>
                 </div>
 
-                <div className="absolute top-24 right-12 z-40 bg-black/60 backdrop-blur-3xl border border-white/10 p-6 rounded-3xl w-64 shadow-2xl">
-                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-2">{spec.style}</span>
-                    <div className="text-3xl font-black">{spec.width}' × {spec.depth}'</div>
-                    <div className="text-[10px] text-white/40 mt-2">{(spec.width * spec.depth).toLocaleString()} Sq Ft</div>
+                {/* DIMENSIONS BOX */}
+                <div className="absolute top-24 right-12 z-40 glass p-6 rounded-3xl w-64 shadow-2xl border-placed-blue/10 animate-flicker">
+                    <span className="text-[10px] font-black text-placed-blue uppercase tracking-widest block mb-2">Architectural Spec</span>
+                    <div className="text-3xl font-black text-white">{spec.width}' × {spec.depth}'</div>
+                    <div className="text-[10px] text-white/40 mt-2 font-mono">{(spec.width * spec.depth).toLocaleString()} SQ.FT / LUNAI V7.2</div>
+                </div>
+
+                {/* LUNAI ARCHITECTURAL OVERLAY */}
+                <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+                    <div className="absolute top-10 left-10 border-l border-t border-blue-500/30 w-20 h-20" />
+                    <div className="absolute top-10 right-10 border-r border-t border-blue-500/30 w-20 h-20" />
+                    <div className="absolute bottom-10 left-10 border-l border-b border-blue-500/30 w-20 h-20" />
+                    <div className="absolute bottom-10 right-10 border-r border-b border-blue-500/30 w-20 h-20" />
+
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')] opacity-10" />
+
+                    {/* Scanning Line */}
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-blue-400/20 shadow-[0_0_15px_rgba(59,130,246,0.3)] animate-scan" />
+                </div>
+
+                {/* Status Readouts */}
+                <div className="absolute bottom-12 right-12 z-10 hidden md:block text-right animate-pulse-soft">
+                    <div className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.3em] mb-1">Atmospheric Simulation</div>
+                    <div className="text-sm font-bold text-white tracking-widest">{weather.toUpperCase()} / {spec.renderMode}</div>
+                </div>
+
+                <div className="absolute bottom-12 left-12 z-10 hidden md:block text-left animate-pulse-soft opacity-40">
+                    <div className="text-[7px] font-mono text-white/40 leading-tight">
+                        &gt; LUNAI CORE ACTIVE<br />
+                        &gt; PARAMS: {spec.width}x{spec.depth}x{spec.pitch}<br />
+                        &gt; STABILITY: OPTIMAL
+                    </div>
                 </div>
 
                 <ShedVisualizer spec={spec} weather={weather} focalFeature={focalPoint} />
@@ -680,33 +756,6 @@ Total: $${costs.total.toLocaleString()}
                 />
             )}
 
-            {/* Authenticator Modal for Saving */}
-            {showLogin && (
-                <div className="fixed inset-0 z-[300] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl p-8 relative max-w-md w-full">
-                        <button onClick={() => setShowLogin(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900">✕</button>
-                        <Authenticator>
-                            {({ signOut, user }) => {
-                                if (user) {
-                                    // Auto-save once logged in? Or just show user state?
-                                    // For now, let's just show a button to confirm save
-                                    return (
-                                        <div className="text-center">
-                                            <h3 className="text-xl font-bold mb-4 text-slate-900">Welcome, {user.signInDetails?.loginId}</h3>
-                                            <p className="mb-6 text-slate-500">You are signed in. Ready to save your design?</p>
-                                            <div className="flex gap-4 justify-center">
-                                                <button onClick={handleSave} className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700">Confirm Save</button>
-                                                <button onClick={signOut} className="text-slate-500 hover:text-slate-900 px-6 py-2">Sign Out</button>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                                return null;
-                            }}
-                        </Authenticator>
-                    </div>
-                </div>
-            )}
 
             {showNudge && (
                 <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">

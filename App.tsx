@@ -14,11 +14,6 @@ import ExteriorInspectionPage from './components/ExteriorInspectionPage';
 import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
 import PaymentPage from './components/PaymentPage';
-import { Amplify } from 'aws-amplify';
-import outputs from './amplify_outputs.json';
-import '@aws-amplify/ui-react/styles.css';
-
-Amplify.configure(outputs);
 
 import PaymentSuccessPage from './components/PaymentSuccessPage';
 import BossQuarters from './components/StaffDashboard';
@@ -346,16 +341,16 @@ const App: React.FC = () => {
                     <div className="absolute bottom-full right-0 mb-6 w-96 bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 animate-in slide-in-from-bottom-10 fade-in duration-500">
                         <button onClick={() => setChatbotOpen(false)} className="absolute top-6 right-8 text-slate-300 hover:text-slate-900 transition-colors text-xl">✕</button>
                         <div className="flex items-center gap-5 mb-8">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop" className="w-16 h-16 rounded-2xl shadow-xl" alt="Harper" />
+                            <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-16 h-16 rounded-2xl shadow-xl border border-blue-500/30 object-cover" alt="LUNAI" />
                             <div>
-                                <div className="font-black text-slate-900 text-lg leading-none mb-1 uppercase tracking-tighter">Harper AI</div>
-                                <div className="text-[10px] font-bold text-green-500 uppercase tracking-widest flex items-center gap-1">
-                                    <span className="w-2 h-2 rounded-full bg-green-500" /> Online Assistant
+                                <div className="font-black text-slate-900 text-lg leading-none mb-1 uppercase tracking-tighter">LUNAI AI</div>
+                                <div className="text-[10px] font-bold text-blue-500 uppercase tracking-widest flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" /> Architect Core Active
                                 </div>
                             </div>
                         </div>
-                        <p className="text-slate-500 leading-relaxed font-medium mb-8">
-                            Hi! I'm Harper, your Placed Contractor Liaison. I can help you with material specifics or financing options.
+                        <p className="text-slate-500 leading-relaxed font-medium mb-8 text-sm">
+                            Greetings. I am **LUNAI**, your Architectural Intelligence. I can refine your parameters or simulate the ROI of your PLACED asset.
                         </p>
                     </div>
                 )}

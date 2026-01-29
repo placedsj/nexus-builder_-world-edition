@@ -12,17 +12,21 @@ const StaffDashboard = () => {
     const [dataLoadError, setDataLoadError] = useState(true); // Default to true to show demo banner
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans selection:bg-orange-500/30">
+        <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-500/30">
             {/* Header */}
             <header className="bg-slate-900/50 border-b border-white/5 backdrop-blur-xl sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-lg ring-1 ring-white/10">B</div>
-                        <span className="text-lg font-black tracking-widest uppercase text-white">Boss<span className="text-orange-500">Quarters</span></span>
+                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-blue-500/30">
+                            <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-full h-full object-cover" alt="L" />
+                        </div>
+                        <span className="text-lg font-black tracking-widest uppercase text-white">Operations<span className="text-blue-500">Core</span></span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <span className="px-3 py-1 bg-white/5 rounded-full text-xs font-bold text-slate-400 border border-white/5">Guest Mode</span>
-                        <div className="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full border border-white/10" />
+                        <span className="px-3 py-1 glass rounded-full text-xs font-bold text-slate-400 border border-white/5 uppercase tracking-widest">Architect Intel Level 4</span>
+                        <div className="w-8 h-8 rounded-full border border-blue-500/30 overflow-hidden">
+                            <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-full h-full object-cover" alt="A" />
+                        </div>
                     </div>
                 </div>
             </header>
@@ -126,8 +130,8 @@ const StaffDashboard = () => {
                 {/* Empty State for other tabs */}
                 {(activeTab !== 'dashboard' && activeTab !== 'financing') && (
                     <div className="text-center py-20 text-slate-500">
-                        <span className="text-4xl block mb-4 opacity-50">🚧</span>
-                        <p className="font-bold uppercase tracking-widest text-xs">Module Under Construction</p>
+                        <span className="text-4xl block mb-4 opacity-50 animate-float">⚙️</span>
+                        <p className="font-bold uppercase tracking-widest text-[10px] text-blue-400">LUNAI Optimization Module Under Construction</p>
                     </div>
                 )}
 

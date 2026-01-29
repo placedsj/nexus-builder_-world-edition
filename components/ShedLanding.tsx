@@ -1,4 +1,5 @@
 import React from 'react';
+import LUNAIBanner from './LUNAIBanner';
 
 export default function ShedLanding({ onStart, onHandbook, onCalculator }: { onStart: () => void, onHandbook: () => void, onCalculator: () => void }) {
     return (
@@ -37,6 +38,8 @@ export default function ShedLanding({ onStart, onHandbook, onCalculator }: { onS
                     </div>
                 </div>
             </section>
+
+            <LUNAIBanner />
 
             <section className="py-40 bg-white text-slate-900">
                 <div className="max-w-7xl mx-auto px-10">

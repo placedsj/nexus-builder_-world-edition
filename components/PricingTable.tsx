@@ -34,8 +34,8 @@ const PricingTable = () => {
         <section id="pricing" className="py-40 bg-white relative overflow-hidden">
             <div className="container mx-auto px-6">
                 <div className="text-center mb-24">
-                    <span className="text-orange-500 font-black uppercase tracking-[0.3em] text-xs">2026 PRICING ENGINE</span>
-                    <h2 className="text-7xl font-black text-slate-900 mt-4 leading-none tracking-tighter">Transparent <span className="text-slate-300">Investment</span></h2>
+                    <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] block underline decoration-blue-500/30 underline-offset-4 mb-2">LUNAI PRICING CORE v7.2</span>
+                    <h2 className="text-7xl font-black text-slate-900 leading-none tracking-tighter">Transparent <span className="text-slate-300">Investment</span></h2>
 
                     {/* Toggle */}
                     <div className="mt-12 inline-flex items-center p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
@@ -65,8 +65,8 @@ const PricingTable = () => {
                             className={`relative p-12 rounded-[3.5rem] border transition-all ${tier.popular ? 'border-orange-500 bg-slate-900 text-white shadow-2xl scale-105 z-10' : 'border-slate-100 bg-white text-slate-900 hover:border-blue-200'}`}
                         >
                             {tier.popular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    Most Popular
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/30">
+                                    LUNAI RECOMMENDED
                                 </div>
                             )}
 
@@ -93,7 +93,7 @@ const PricingTable = () => {
 
                             <button className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all
                                 ${tier.popular
-                                    ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-500/20'
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-900/40'
                                     : 'bg-slate-900 hover:bg-black text-white'}`}>
                                 Get Started <ArrowRight size={16} className="inline ml-2" />
                             </button>

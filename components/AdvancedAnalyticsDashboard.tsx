@@ -23,7 +23,7 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
 
         const baseRental = rentalValue[spec.style as keyof typeof rentalValue] || 1600;
         const monthlyRental = baseRental;
-        
+
         const costs_total = costs.total;
 
         const yearsToAnalyze = timeframe === '1y' ? 1 : timeframe === '5y' ? 5 : 10;
@@ -34,13 +34,20 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
         const scenarios = [];
         for (let y = 1; y <= yearsToAnalyze; y++) {
             let revenue = monthlyRental * 12 * y;
-            
+
             // Escalation: 3% annual increase in rental value
             revenue = monthlyRental * 12 * ((Math.pow(1.03, y) - 1) / 0.03);
 
-            // Maintenance costs (start at 5% of initial cost, grow 2% annually)
-            let maintenanceCost = costs_total * 0.05;
-            maintenanceCost = maintenanceCost * ((Math.pow(1.02, y) - 1) / 0.02);
+            // Maintenance costs (ShedCare vs. Standard)
+            let maintenanceCost = 0;
+            if (spec.addons.shedcare) {
+                // $49/mo subscription model
+                maintenanceCost = (49 * 12) * y;
+            } else {
+                // Standard maintenance (start at 5% of initial cost, grow 2% annually)
+                const baseMaintenance = costs_total * 0.05;
+                maintenanceCost = baseMaintenance * ((Math.pow(1.02, y) - 1) / 0.02);
+            }
 
             const netProfit = revenue - maintenanceCost - costs_total;
             const roiPercent = (netProfit / costs_total) * 100;
@@ -95,8 +102,10 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                 if (task.frequency === 'as-needed' && y > 3 && Math.random() > 0.8) include = true; // Stochastic
 
                 if (include) {
-                    yearCost += task.cost;
-                    taskDetails.push(task.task);
+                    // If ShedCare is active, certain tasks are "covered" (free)
+                    const isShedCareCovered = spec.addons.shedcare && !['as-needed', '5-yearly'].includes(task.frequency);
+                    yearCost += isShedCareCovered ? 0 : task.cost;
+                    taskDetails.push(`${task.task}${isShedCareCovered ? ' (ShedCare Covered)' : ''}`);
                 }
             });
 
@@ -168,7 +177,7 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
         }
 
         return {
-            discountReason: spec.electricalTier 
+            discountReason: spec.electricalTier
                 ? `LUNAI 30A smart monitoring qualifies for premium discount`
                 : 'PLACED structural quality reduces risk profile',
             projections,
@@ -182,12 +191,17 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                 {/* Header */}
                 <div className="mb-12">
                     <div className="flex justify-between items-start mb-8">
-                        <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-4 block">Financial Analysis</span>
-                            <h1 className="text-6xl font-black tracking-tighter uppercase mb-6">Advanced Analytics.</h1>
-                            <p className="text-white/40 max-w-2xl text-lg font-medium leading-relaxed">
-                                Deep-dive ROI modeling, maintenance cost projections, property value impact, and insurance savings. LUNAI-powered financial forecasting.
-                            </p>
+                        <div className="flex items-center gap-6">
+                            <div className="w-20 h-20 rounded-3xl glass p-1 border-blue-500/20 overflow-hidden shrink-0">
+                                <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-full h-full object-cover animate-pulse" alt="LUNAI" />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-4 block underline decoration-blue-500/30 underline-offset-4">LUNAI Financial Engine v7.2</span>
+                                <h1 className="text-6xl font-black tracking-tighter uppercase mb-2">Advanced Analytics.</h1>
+                                <p className="text-white/40 max-w-2xl text-sm font-medium leading-relaxed">
+                                    Deep-dive ROI modeling, maintenance projections, and LUNAI-powered financial forecasting.
+                                </p>
+                            </div>
                         </div>
                         {onClose && (
                             <button
@@ -205,11 +219,10 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                             <button
                                 key={tf}
                                 onClick={() => setTimeframe(tf as any)}
-                                className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                    timeframe === tf
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-                                        : 'border border-white/10 text-white/60 hover:text-white'
-                                }`}
+                                className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${timeframe === tf
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                                    : 'border border-white/10 text-white/60 hover:text-white'
+                                    }`}
                             >
                                 {tf === '1y' ? '1 Year' : tf === '5y' ? '5 Years' : '10 Years'} Projection
                             </button>
@@ -223,11 +236,10 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                         <button
                             key={tab}
                             onClick={() => setSelectedTab(tab)}
-                            className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 ${
-                                selectedTab === tab
-                                    ? 'text-blue-400 border-b-blue-400'
-                                    : 'text-white/40 border-b-transparent hover:text-white/60'
-                            }`}
+                            className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 ${selectedTab === tab
+                                ? 'text-blue-400 border-b-blue-400'
+                                : 'text-white/40 border-b-transparent hover:text-white/60'
+                                }`}
                         >
                             {tab === 'roi' && 'ROI Analysis'}
                             {tab === 'maintenance' && 'Maintenance Plan'}
@@ -593,7 +605,10 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                     <p className="text-white/60 max-w-2xl mx-auto mb-8 font-medium">
                         Download your complete financial analysis, share with lenders, or use for tax planning. All numbers backed by LUNAI intelligence.
                     </p>
-                    <button className="px-10 py-4 bg-white text-blue-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-xl">
+                    <button
+                        onClick={() => window.print()}
+                        className="px-10 py-4 bg-white text-blue-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-xl"
+                    >
                         Download Full Report (PDF)
                     </button>
                 </div>

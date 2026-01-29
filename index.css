@@ -1,25 +1,107 @@
 @import "tailwindcss";
 
 @theme {
+  /* Premium HSL Color Tokens */
+  --color-placed-blue: hsl(220, 95%, 60%);
+  --color-placed-deep: hsl(222, 47%, 11%);
+  --color-placed-emerald: hsl(150, 80%, 50%);
+  --color-placed-glow: hsla(220, 95%, 60%, 0.15);
+
   --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
   --animate-sway: sway 4s ease-in-out infinite;
+  --animate-scan: scan 2s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
 
   @keyframes pulse-soft {
-    0%, 100% { opacity: 0.3; transform: scale(1) translate(-50%, -50%); }
-    50% { opacity: 0.6; transform: scale(1.1) translate(-50%, -50%); }
+
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1) translate(-50%, -50%);
+    }
+
+    50% {
+      opacity: 0.6;
+      transform: scale(1.1) translate(-50%, -50%);
+    }
   }
 
   @keyframes sway {
-    0%, 100% { transform: skewX(0deg); }
-    50% { transform: skewX(2deg); }
+
+    0%,
+    100% {
+      transform: skewX(0deg);
+    }
+
+    50% {
+      transform: skewX(2deg);
+    }
+  }
+
+  @keyframes scan {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+
+    100% {
+      transform: translateY(300%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes flicker {
+
+    0%,
+    19.999%,
+    22%,
+    62.999%,
+    64%,
+    64.999%,
+    70%,
+    100% {
+      opacity: 0.99;
+      filter: drop-shadow(0 0 1px rgba(59, 130, 246, 0.2));
+    }
+
+    20%,
+    21.999%,
+    63%,
+    63.999%,
+    65%,
+    69.999% {
+      opacity: 0.4;
+      filter: none;
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
+
+  /* Glassmorphism Defaults */
+  --glass-bg: rgba(2, 6, 23, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 16px;
 }
 
 body {
@@ -28,4 +110,28 @@ body {
   width: 100vw;
   overflow-x: hidden;
   background-color: #020617;
+  color: #f8fafc;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(30, 64, 175, 0.15), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05), transparent 50%);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

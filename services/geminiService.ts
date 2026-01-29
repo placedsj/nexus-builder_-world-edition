@@ -3,7 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 export const generateConfigFromPrompt = async (prompt: string, currentSpec: any) => {
     // Initializing GoogleGenAI client
-    const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+    // @ts-ignore
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     const ai = new GoogleGenAI({ apiKey });
 
     // Using gemini-3-pro-preview for complex reasoning tasks

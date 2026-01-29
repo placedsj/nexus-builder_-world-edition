@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ShedSpec, CostEstimate } from '../types';
+import { insuranceService, InsuranceQuote } from '../services/insuranceService';
 
 interface InsurancePartnerIntegrationProps {
     spec: ShedSpec;
@@ -23,6 +24,8 @@ interface InsuranceOffer {
 const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = ({ spec, costs, onClose }) => {
     const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
     const [showDetails, setShowDetails] = useState(false);
+    const [applicationState, setApplicationState] = useState<'idle' | 'submitting' | 'success'>('idle');
+    const [quoteResult, setQuoteResult] = useState<InsuranceQuote | null>(null);
 
     // LUNAI Risk Scoring Algorithm
     const riskProfile = useMemo(() => {
@@ -43,8 +46,28 @@ const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = 
         baseRisk -= (monitoringScore / 100) * 15;
 
         // Floor Confidence (0-100)
+        // Floor Confidence (0-100)
         return Math.max(20, Math.min(100, baseRisk));
     }, [spec]);
+
+    const handleApply = async (partnerId: string) => {
+        setApplicationState('submitting');
+        setSelectedPartner(partnerId);
+        try {
+            const result = await insuranceService.applyForQuote({
+                partnerId,
+                shedSpec: spec,
+                estimatedCost: costs.total,
+                riskScore: riskProfile
+            });
+            setQuoteResult(result);
+            setApplicationState('success');
+            setShowDetails(true);
+        } catch (error) {
+            console.error("Insurance application failed", error);
+            setApplicationState('idle');
+        }
+    };
 
     // Insurance Offer Simulator
     const insuranceOffers: InsuranceOffer[] = useMemo(() => {
@@ -104,7 +127,7 @@ const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = 
     }, [riskProfile, spec]);
 
     const bestOffer = useMemo(() => {
-        return insuranceOffers.reduce((best, current) => 
+        return insuranceOffers.reduce((best, current) =>
             current.discount > best.discount ? current : best
         );
     }, [insuranceOffers]);
@@ -208,11 +231,10 @@ const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = 
                                     setSelectedPartner(offer.id);
                                     setShowDetails(true);
                                 }}
-                                className={`group relative cursor-pointer rounded-3xl border-2 p-8 transition-all ${
-                                    selectedPartner === offer.id
-                                        ? 'border-green-500 bg-green-500/10 shadow-2xl shadow-green-900/20'
-                                        : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8'
-                                }`}
+                                className={`group relative cursor-pointer rounded-3xl border-2 p-8 transition-all ${selectedPartner === offer.id
+                                    ? 'border-green-500 bg-green-500/10 shadow-2xl shadow-green-900/20'
+                                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8'
+                                    }`}
                             >
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -282,8 +304,20 @@ const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = 
                                     </div>
 
                                     {/* CTA Button */}
-                                    <button className="w-full mt-8 py-4 bg-green-600 hover:bg-green-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all group-hover:scale-[1.02] shadow-lg shadow-green-900/30">
-                                        {offer.verificationStatus === 'verified' ? 'Get Quote' : 'Apply Now'}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleApply(offer.id);
+                                        }}
+                                        disabled={applicationState === 'submitting'}
+                                        className={`w-full mt-8 py-4 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-green-900/30 ${applicationState === 'submitting' && selectedPartner === offer.id
+                                            ? 'bg-green-800 cursor-wait'
+                                            : 'bg-green-600 hover:bg-green-500 text-white group-hover:scale-[1.02]'
+                                            }`}
+                                    >
+                                        {applicationState === 'submitting' && selectedPartner === offer.id
+                                            ? 'Submitting...'
+                                            : (offer.verificationStatus === 'verified' ? 'Get Quote' : 'Apply Now')}
                                     </button>
                                 </div>
                             </div>
@@ -316,11 +350,10 @@ const InsurancePartnerIntegration: React.FC<InsurancePartnerIntegrationProps> = 
                                                     <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-[9px] font-black uppercase">
                                                         ⭐ {offer.trustScore}/100
                                                     </span>
-                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${
-                                                        offer.verificationStatus === 'verified'
-                                                            ? 'bg-green-500/20 text-green-400'
-                                                            : 'bg-yellow-500/20 text-yellow-400'
-                                                    }`}>
+                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${offer.verificationStatus === 'verified'
+                                                        ? 'bg-green-500/20 text-green-400'
+                                                        : 'bg-yellow-500/20 text-yellow-400'
+                                                        }`}>
                                                         {offer.verificationStatus === 'verified' ? '✓ Verified' : '⏳ Pending'}
                                                     </span>
                                                 </div>
