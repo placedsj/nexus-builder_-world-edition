@@ -43,8 +43,8 @@ const LUNAIBanner = () => {
                             <div className="w-64 h-64 md:w-80 md:h-80 bg-white/5 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/10 shadow-2xl relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <img
-                                    src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png"
-                                    className="w-48 h-48 object-cover animate-pulse relative z-10"
+                                    src="/placed_logo_wall.jpg"
+                                    className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 relative z-10"
                                     alt="LUNAI Core"
                                 />
                                 <div className="absolute inset-0 border-2 border-dashed border-blue-500/20 rounded-full animate-[spin_20s_linear_infinite]" />

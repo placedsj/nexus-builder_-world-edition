@@ -44,14 +44,22 @@ const StaffDashboard = () => {
             <div className="max-w-7xl mx-auto px-6 py-10">
                 {/* Tabs */}
                 <div className="flex gap-2 overflow-x-auto pb-6 mb-6 border-b border-white/5 no-scrollbar">
-                    {['Dashboard', 'Staff', 'Projects', 'Financing', 'Schedule'].map((tab) => (
+                    {['Dashboard', 'Staff', 'Projects', 'Financing', 'Schedule', 'Justice'].map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab.toLowerCase())}
+                            onClick={() => {
+                                if (tab === 'Justice') {
+                                    window.location.hash = '#medical-truth';
+                                } else {
+                                    setActiveTab(tab.toLowerCase());
+                                }
+                            }}
                             className={`px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all whitespace-nowrap
                                 ${activeTab === tab.toLowerCase()
                                     ? 'bg-white text-slate-900 shadow-xl scale-105'
-                                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                                    : tab === 'Justice'
+                                        ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20'
+                                        : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
                         >
                             {tab}
                         </button>

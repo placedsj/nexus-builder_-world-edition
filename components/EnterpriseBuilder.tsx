@@ -1,5 +1,10 @@
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import {
+    ChevronRight, Save, Share2, Calculator, Info, Check,
+    ArrowLeft, Zap, Box, ArrowUpRight, MessageSquare,
+    Sparkles, ShieldAlert, Activity, Globe, LayoutDashboard, Settings
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import WeatherOverlay from './WeatherOverlay';
 import ShedVisualizer from './ShedVisualizer';
 import {
@@ -120,6 +125,21 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
     const [showMobileSidebar, setShowMobileSidebar] = useState(false);
     const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
+    // Structural Safety Logic
+    const safetyMetrics = useMemo(() => {
+        const area = spec.width * spec.depth;
+        const windLoad = spec.style === 'A-Frame' ? 140 : (spec.style === 'Modern Studio' ? 110 : 120);
+        const snowLoad = spec.pitch >= 6 ? 60 : 35;
+        const stabilityScore = Math.max(0, 100 - (area / 400) * 10 - (spec.pitch < 4 ? 15 : 0));
+
+        return {
+            windLoad,
+            snowLoad,
+            stabilityScore: Math.round(stabilityScore),
+            status: stabilityScore > 85 ? 'Optimal' : (stabilityScore > 70 ? 'Warning' : 'Critical'),
+            recommendation: area > 240 && spec.terrain === 'grass' ? "Recommend Gravel Pad" : "Foundation Stable"
+        };
+    }, [spec]);
 
     const handleSave = async () => {
         // AWS Integration removed. Simulating local save.
@@ -305,6 +325,26 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
 
     return (
         <div className="w-full h-screen transition-all duration-1000 relative flex overflow-hidden font-sans text-white bg-slate-950">
+            {/* Structural Advisor HUD */}
+            <AnimatePresence>
+                {safetyMetrics.status !== 'Optimal' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] glass px-6 py-3 rounded-2xl border border-orange-500/30 flex items-center gap-4 shadow-2xl shadow-orange-950/20"
+                    >
+                        <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
+                            <ShieldAlert size={18} />
+                        </div>
+                        <div>
+                            <div className="text-[10px] font-black uppercase text-orange-400 tracking-[0.2em]">LUNAI Structural Alert</div>
+                            <div className="text-xs font-bold text-white">{safetyMetrics.recommendation}</div>
+                        </div>
+                        <button onClick={() => setShowRegional(true)} className="ml-2 text-[10px] font-black uppercase px-3 py-1 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">Details</button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             {showShowroom && (
                 <div className="absolute inset-0 z-[200] bg-slate-950/95 backdrop-blur-xl p-12 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-500">
                     <div className="max-w-6xl mx-auto">
@@ -438,215 +478,253 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                                 maxAmps={powerMetrics.maxAmps}
                                 loadFactor={powerMetrics.loadFactor}
                             />
+
+                            {/* Technical Readout HUD */}
+                            <div className="glass p-6 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-20 transition-opacity">
+                                    <Activity size={50} className="text-blue-500" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-8 flex items-center gap-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                    Digital Twin: Structural Specs
+                                </div>
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center group/spec">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest group-hover/spec:text-slate-300 transition-colors">Wind Load Limit</span>
+                                        <span className="text-[10px] font-black text-white font-mono bg-white/5 px-3 py-1 rounded-lg">{safetyMetrics.windLoad} MPH</span>
+                                    </div>
+                                    <div className="flex justify-between items-center group/spec">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest group-hover/spec:text-slate-300 transition-colors">Max Snow Load</span>
+                                        <span className="text-[10px] font-black text-white font-mono bg-white/5 px-3 py-1 rounded-lg">{safetyMetrics.snowLoad} PSF</span>
+                                    </div>
+                                    <div className="pt-2 border-t border-white/5 transition-all">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Structural Unity</span>
+                                            <span className={`text-[10px] font-black font-mono ${safetyMetrics.stabilityScore > 85 ? 'text-emerald-400' : 'text-orange-400'}`}>{safetyMetrics.stabilityScore}%</span>
+                                        </div>
+                                        <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${safetyMetrics.stabilityScore}%` }}
+                                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                                className={`h-full ${safetyMetrics.stabilityScore > 85 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-orange-500'}`}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     )}
 
-                    {activePanelTab === 'structure' && (
-                        <div className="p-8 space-y-8">
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-400 mb-6 flex justify-between items-baseline">
-                                    Architectural Style
-                                    <button onClick={() => setShowShowroom(true)} className="text-[9px] text-white/40 hover:text-white transition-colors">Change Base →</button>
-                                </label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {(['A-Frame', 'Modern Studio', 'Quaker'] as ShedStyleType[]).map(style => (
-                                        <button
-                                            key={style}
-                                            onClick={() => {
-                                                setSpec({ ...spec, style });
-                                                setFocalPoint('roof');
-                                            }}
-                                            className={`py-4 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${spec.style === style ? 'border-blue-500 bg-blue-500/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20'}`}
-                                        >
-                                            {style.replace(' Studio', '')}
-                                        </button>
-                                    ))}
-                                </div>
-                            </section>
+                    {
+                        activePanelTab === 'structure' && (
+                            <div className="p-8 space-y-8">
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-400 mb-6 flex justify-between items-baseline">
+                                        Architectural Style
+                                        <button onClick={() => setShowShowroom(true)} className="text-[9px] text-white/40 hover:text-white transition-colors">Change Base →</button>
+                                    </label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {(['A-Frame', 'Modern Studio', 'Quaker'] as ShedStyleType[]).map(style => (
+                                            <button
+                                                key={style}
+                                                onClick={() => {
+                                                    setSpec({ ...spec, style });
+                                                    setFocalPoint('roof');
+                                                }}
+                                                className={`py-4 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${spec.style === style ? 'border-blue-500 bg-blue-500/10 text-white' : 'border-white/5 text-slate-500 hover:border-white/20'}`}
+                                            >
+                                                {style.replace(' Studio', '')}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
 
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Siding Configuration</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        onClick={() => {
-                                            setSpec({ ...spec, sidingType: 'lap' });
-                                            setFocalPoint('siding');
-                                        }}
-                                        className={`group py-6 rounded-3xl border-2 flex flex-col items-center justify-center transition-all ${spec.sidingType === 'lap' ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg shadow-blue-900/20' : 'border-white/5 text-slate-500 hover:border-white/20 hover:text-slate-300'}`}
-                                    >
-                                        <div className="w-8 h-8 mb-2 flex flex-col gap-1 overflow-hidden rounded-md border border-white/5 bg-white/5 p-1 group-hover:scale-110 transition-transform">
-                                            <div className="w-full h-1 bg-current opacity-40 shrink-0" />
-                                            <div className="w-full h-1 bg-current opacity-40 shrink-0" />
-                                            <div className="w-full h-1 bg-current opacity-40 shrink-0" />
-                                            <div className="w-full h-1 bg-current opacity-40 shrink-0" />
-                                        </div>
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Horizontal Lap</span>
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setSpec({ ...spec, sidingType: 'board' });
-                                            setFocalPoint('siding');
-                                        }}
-                                        className={`group py-6 rounded-3xl border-2 flex flex-col items-center justify-center transition-all ${spec.sidingType === 'board' ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg shadow-blue-900/20' : 'border-white/5 text-slate-500 hover:border-white/20 hover:text-slate-300'}`}
-                                    >
-                                        <div className="w-8 h-8 mb-2 flex gap-1 overflow-hidden rounded-md border border-white/5 bg-white/5 p-1 group-hover:scale-110 transition-transform">
-                                            <div className="h-full w-1 bg-current opacity-40 shrink-0" />
-                                            <div className="h-full w-1 bg-current opacity-40 shrink-0" />
-                                            <div className="h-full w-1 bg-current opacity-40 shrink-0" />
-                                            <div className="h-full w-1 bg-current opacity-40 shrink-0" />
-                                        </div>
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Board & Batten</span>
-                                    </button>
-                                </div>
-                            </section>
-
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Material Swatches</label>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {COLOR_PALETTE.map(c => (
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Siding Configuration</label>
+                                    <div className="grid grid-cols-2 gap-3">
                                         <button
-                                            key={c.name}
                                             onClick={() => {
-                                                setSpec({ ...spec, wallColor: c.hex });
+                                                setSpec({ ...spec, sidingType: 'lap' });
                                                 setFocalPoint('siding');
                                             }}
-                                            className={`group relative flex flex-col items-center gap-2 p-1 rounded-2xl border-2 transition-all ${spec.wallColor === c.hex ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20'}`}
+                                            className={`group py-6 rounded-3xl border-2 flex flex-col items-center justify-center transition-all ${spec.sidingType === 'lap' ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg shadow-blue-900/20' : 'border-white/5 text-slate-500 hover:border-white/20 hover:text-slate-300'}`}
                                         >
-                                            <div className="w-full aspect-square rounded-xl shadow-inner overflow-hidden relative">
-                                                <div className="absolute inset-0" style={{ backgroundColor: c.hex }} />
-                                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-30 mix-blend-overlay" />
-                                                <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-white/10" />
+                                            <div className="w-8 h-8 mb-2 flex flex-col gap-1 overflow-hidden rounded-md border border-white/5 bg-white/5 p-1 group-hover:scale-110 transition-transform">
+                                                <div className="w-full h-1 bg-current opacity-40 shrink-0" />
+                                                <div className="w-full h-1 bg-current opacity-40 shrink-0" />
+                                                <div className="w-full h-1 bg-current opacity-40 shrink-0" />
+                                                <div className="w-full h-1 bg-current opacity-40 shrink-0" />
                                             </div>
-                                            <span className="text-[8px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity pb-2">{c.name}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Horizontal Lap</span>
                                         </button>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Electrical Tier</label>
-                                <div className="space-y-4">
-                                    {[
-                                        { id: null, name: 'Basic (Extension Cord)', cost: 0, desc: 'Simple pass-through port.' },
-                                        { id: '20A', name: '20A Weekender', cost: 300, desc: 'Lights, laptop, light tools.' },
-                                        { id: '30A', name: 'Current Command (Smart)', cost: 900, desc: '30A Umbilical with smart load manager.' },
-                                        { id: 'offgrid', name: 'Off-Grid / Solar', cost: 2500, desc: 'PointGuard system for remote areas.' }
-                                    ].map(tier => (
                                         <button
-                                            key={tier.id === null ? 'null' : tier.id}
-                                            onClick={() => setSpec(s => ({ ...s, electricalTier: tier.id as any }))}
-                                            className={`w-full p-5 rounded-2xl border flex items-center justify-between transition-all ${spec.electricalTier === tier.id ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' : 'border-white/10 text-slate-500 hover:bg-white/5'}`}
+                                            onClick={() => {
+                                                setSpec({ ...spec, sidingType: 'board' });
+                                                setFocalPoint('siding');
+                                            }}
+                                            className={`group py-6 rounded-3xl border-2 flex flex-col items-center justify-center transition-all ${spec.sidingType === 'board' ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg shadow-blue-900/20' : 'border-white/5 text-slate-500 hover:border-white/20 hover:text-slate-300'}`}
                                         >
-                                            <div className="flex flex-col items-start w-full">
-                                                <div className="flex justify-between w-full mb-1">
-                                                    <span className="text-[10px] font-black uppercase flex items-center gap-2">
-                                                        {tier.name}
-                                                        {tier.id === '30A' && <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">POPULAR</span>}
-                                                        {tier.id === 'offgrid' && <span className="bg-green-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">ECO</span>}
-                                                    </span>
-                                                    <span className="text-[10px] font-black">{tier.cost > 0 ? `+$${tier.cost}` : 'FREE'}</span>
-                                                </div>
-                                                <span className="text-[9px] opacity-60 text-left">{tier.desc}</span>
+                                            <div className="w-8 h-8 mb-2 flex gap-1 overflow-hidden rounded-md border border-white/5 bg-white/5 p-1 group-hover:scale-110 transition-transform">
+                                                <div className="h-full w-1 bg-current opacity-40 shrink-0" />
+                                                <div className="h-full w-1 bg-current opacity-40 shrink-0" />
+                                                <div className="h-full w-1 bg-current opacity-40 shrink-0" />
+                                                <div className="h-full w-1 bg-current opacity-40 shrink-0" />
                                             </div>
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Board & Batten</span>
                                         </button>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Advanced Features</label>
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={() => setShowInsurance(true)}
-                                        className="w-full p-5 rounded-2xl border border-green-500/30 text-left transition-all hover:bg-green-500/10 hover:border-green-500"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-green-400">Insurance Verified</span>
-                                                <span className="text-[9px] text-white/40 mt-1">Qualify for discounts</span>
-                                            </div>
-                                            <span className="text-xl">🛡️</span>
-                                        </div>
-                                    </button>
-
-                                    <button
-                                        onClick={() => setShowHardware(true)}
-                                        className="w-full p-5 rounded-2xl border border-orange-500/30 text-left transition-all hover:bg-orange-500/10 hover:border-orange-500"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-orange-400">Shed Tether Hardware</span>
-                                                <span className="text-[9px] text-white/40 mt-1">Power specs & calculations</span>
-                                            </div>
-                                            <span className="text-xl">⚡</span>
-                                        </div>
-                                    </button>
-
-                                    <button
-                                        onClick={() => setShowRegional(true)}
-                                        className="w-full p-5 rounded-2xl border border-cyan-500/30 text-left transition-all hover:bg-cyan-500/10 hover:border-cyan-500"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">Regional Network</span>
-                                                <span className="text-[9px] text-white/40 mt-1">Community nodes & expansion</span>
-                                            </div>
-                                            <span className="text-xl">🌐</span>
-                                        </div>
-                                    </button>
-
-                                    <button
-                                        onClick={() => setShowAnalytics(true)}
-                                        className="w-full p-5 rounded-2xl border border-blue-500/30 text-left transition-all hover:bg-blue-500/10 hover:border-blue-500"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Financial Analytics</span>
-                                                <span className="text-[9px] text-white/40 mt-1">ROI & maintenance forecasts</span>
-                                            </div>
-                                            <span className="text-xl">💰</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            </section>
-
-                            <section>
-                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Addons</label>
-                                <div className="space-y-2">
-                                    {UPGRADES.map(u => (
-                                        <button
-                                            key={u.id}
-                                            onClick={() => setSpec(s => ({ ...s, addons: { ...s.addons, [u.id]: !s.addons[u.id] } }))}
-                                            className={`w-full p-5 rounded-2xl border flex items-center gap-4 transition-all ${spec.addons[u.id] ? 'border-orange-500 bg-orange-500/10 text-orange-400' : 'border-white/10 text-slate-500'}`}
-                                        >
-                                            <span className="text-xl">{u.icon}</span>
-                                            <div className="flex flex-col items-start">
-                                                <span className="text-[10px] font-black uppercase">{u.name}</span>
-                                                <span className="text-[9px] opacity-60">+${u.cost}</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section>
-                                <button
-                                    onClick={() => {
-                                        setShowROI(true);
-                                        setShowNudge(false);
-                                    }}
-                                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white shadow-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform group"
-                                >
-                                    <span className="text-xl group-hover:rotate-12 transition-transform">💰</span>
-                                    <div className="flex flex-col items-start leading-none">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400">Smart Finance</span>
-                                        <span className="text-sm font-bold">Stop Renting Storage</span>
                                     </div>
-                                </button>
-                            </section>
-                        </div>
-                    )}
-                </div>
+                                </section>
+
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Material Swatches</label>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {COLOR_PALETTE.map(c => (
+                                            <button
+                                                key={c.name}
+                                                onClick={() => {
+                                                    setSpec({ ...spec, wallColor: c.hex });
+                                                    setFocalPoint('siding');
+                                                }}
+                                                className={`group relative flex flex-col items-center gap-2 p-1 rounded-2xl border-2 transition-all ${spec.wallColor === c.hex ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20'}`}
+                                            >
+                                                <div className="w-full aspect-square rounded-xl shadow-inner overflow-hidden relative">
+                                                    <div className="absolute inset-0" style={{ backgroundColor: c.hex }} />
+                                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-30 mix-blend-overlay" />
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-white/10" />
+                                                </div>
+                                                <span className="text-[8px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity pb-2">{c.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Electrical Tier</label>
+                                    <div className="space-y-4">
+                                        {[
+                                            { id: null, name: 'Basic (Extension Cord)', cost: 0, desc: 'Simple pass-through port.' },
+                                            { id: '20A', name: '20A Weekender', cost: 300, desc: 'Lights, laptop, light tools.' },
+                                            { id: '30A', name: 'Current Command (Smart)', cost: 900, desc: '30A Umbilical with smart load manager.' },
+                                            { id: 'offgrid', name: 'Off-Grid / Solar', cost: 2500, desc: 'PointGuard system for remote areas.' }
+                                        ].map(tier => (
+                                            <button
+                                                key={tier.id === null ? 'null' : tier.id}
+                                                onClick={() => setSpec(s => ({ ...s, electricalTier: tier.id as any }))}
+                                                className={`w-full p-5 rounded-2xl border flex items-center justify-between transition-all ${spec.electricalTier === tier.id ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' : 'border-white/10 text-slate-500 hover:bg-white/5'}`}
+                                            >
+                                                <div className="flex flex-col items-start w-full">
+                                                    <div className="flex justify-between w-full mb-1">
+                                                        <span className="text-[10px] font-black uppercase flex items-center gap-2">
+                                                            {tier.name}
+                                                            {tier.id === '30A' && <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">POPULAR</span>}
+                                                            {tier.id === 'offgrid' && <span className="bg-green-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">ECO</span>}
+                                                        </span>
+                                                        <span className="text-[10px] font-black">{tier.cost > 0 ? `+$${tier.cost}` : 'FREE'}</span>
+                                                    </div>
+                                                    <span className="text-[9px] opacity-60 text-left">{tier.desc}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Advanced Features</label>
+                                    <div className="space-y-3">
+                                        <button
+                                            onClick={() => setShowInsurance(true)}
+                                            className="w-full p-5 rounded-2xl border border-green-500/30 text-left transition-all hover:bg-green-500/10 hover:border-green-500"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-green-400">Insurance Verified</span>
+                                                    <span className="text-[9px] text-white/40 mt-1">Qualify for discounts</span>
+                                                </div>
+                                                <span className="text-xl">🛡️</span>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setShowHardware(true)}
+                                            className="w-full p-5 rounded-2xl border border-orange-500/30 text-left transition-all hover:bg-orange-500/10 hover:border-orange-500"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-orange-400">Shed Tether Hardware</span>
+                                                    <span className="text-[9px] text-white/40 mt-1">Power specs & calculations</span>
+                                                </div>
+                                                <span className="text-xl">⚡</span>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setShowRegional(true)}
+                                            className="w-full p-5 rounded-2xl border border-cyan-500/30 text-left transition-all hover:bg-cyan-500/10 hover:border-cyan-500"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400">Regional Network</span>
+                                                    <span className="text-[9px] text-white/40 mt-1">Community nodes & expansion</span>
+                                                </div>
+                                                <span className="text-xl">🌐</span>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setShowAnalytics(true)}
+                                            className="w-full p-5 rounded-2xl border border-blue-500/30 text-left transition-all hover:bg-blue-500/10 hover:border-blue-500"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Financial Analytics</span>
+                                                    <span className="text-[9px] text-white/40 mt-1">ROI & maintenance forecasts</span>
+                                                </div>
+                                                <span className="text-xl">💰</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 block">Addons</label>
+                                    <div className="space-y-2">
+                                        {UPGRADES.map(u => (
+                                            <button
+                                                key={u.id}
+                                                onClick={() => setSpec(s => ({ ...s, addons: { ...s.addons, [u.id]: !s.addons[u.id] } }))}
+                                                className={`w-full p-5 rounded-2xl border flex items-center gap-4 transition-all ${spec.addons[u.id] ? 'border-orange-500 bg-orange-500/10 text-orange-400' : 'border-white/10 text-slate-500'}`}
+                                            >
+                                                <span className="text-xl">{u.icon}</span>
+                                                <div className="flex flex-col items-start">
+                                                    <span className="text-[10px] font-black uppercase">{u.name}</span>
+                                                    <span className="text-[9px] opacity-60">+${u.cost}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <button
+                                        onClick={() => {
+                                            setShowROI(true);
+                                            setShowNudge(false);
+                                        }}
+                                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white shadow-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform group"
+                                    >
+                                        <span className="text-xl group-hover:rotate-12 transition-transform">💰</span>
+                                        <div className="flex flex-col items-start leading-none">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400">Smart Finance</span>
+                                            <span className="text-sm font-bold">Stop Renting Storage</span>
+                                        </div>
+                                    </button>
+                                </section>
+                            </div>
+                        )
+                    }
+                </div >
 
                 <div className="p-8 border-t border-white/10 bg-black/40 backdrop-blur-3xl relative overflow-hidden group/footer">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-30" />
@@ -689,7 +767,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
             <div className="flex-1 relative flex flex-col items-center justify-center overflow-hidden z-10 bg-[radial-gradient(circle_at_50%_50%,_rgba(30,64,175,0.05),_transparent_70%)]">
                 {/* HUD CONTROLS */}
@@ -743,77 +821,91 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                 <ShedVisualizer spec={spec} weather={weather} focalFeature={focalPoint} />
             </div>
 
-            {showROI && (
-                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500">
-                    <ROICalculator onClose={() => setShowROI(false)} />
-                </div>
-            )}
-
-            {showShare && (
-                <ShareModal
-                    onClose={() => setShowShare(false)}
-                    url={window.location.href}
-                />
-            )}
-
-
-            {showNudge && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
-                    <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-2xl border border-white/10 flex items-center gap-6 max-w-sm">
-                        <div className="w-12 h-12 bg-cyan-500/10 rounded-full flex items-center justify-center text-2xl">💡</div>
-                        <div>
-                            <div className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1">Investment Tip</div>
-                            <p className="text-sm font-medium leading-tight text-white/80">Comparing this to a storage unit? See how fast it pays for itself.</p>
-                        </div>
-                        <button
-                            onClick={() => {
-                                setShowROI(true);
-                                setShowNudge(false);
-                            }}
-                            className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-cyan-400 transition-colors"
-                        >
-                            Calc ROI
-                        </button>
-                        <button onClick={() => setShowNudge(false)} className="text-white/20 hover:text-white text-xl">×</button>
+            {
+                showROI && (
+                    <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500">
+                        <ROICalculator onClose={() => setShowROI(false)} />
                     </div>
-                </div>
-            )}
-            {showInsurance && (
-                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
-                    <InsurancePartnerIntegration
-                        spec={spec}
-                        costs={costs}
-                        onClose={() => setShowInsurance(false)}
-                    />
-                </div>
-            )}
+                )
+            }
 
-            {showHardware && (
-                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
-                    <ShedTetherHardwarePortal
-                        spec={spec}
-                        onClose={() => setShowHardware(false)}
+            {
+                showShare && (
+                    <ShareModal
+                        onClose={() => setShowShare(false)}
+                        url={window.location.href}
                     />
-                </div>
-            )}
+                )
+            }
 
-            {showRegional && (
-                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
-                    <RegionalExpansionDashboard
-                        onClose={() => setShowRegional(false)}
-                    />
-                </div>
-            )}
 
-            {showAnalytics && (
-                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
-                    <AdvancedAnalyticsDashboard
-                        spec={spec}
-                        costs={costs}
-                        onClose={() => setShowAnalytics(false)}
-                    />
-                </div>
-            )}
+            {
+                showNudge && (
+                    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
+                        <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-2xl border border-white/10 flex items-center gap-6 max-w-sm">
+                            <div className="w-12 h-12 bg-cyan-500/10 rounded-full flex items-center justify-center text-2xl">💡</div>
+                            <div>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1">Investment Tip</div>
+                                <p className="text-sm font-medium leading-tight text-white/80">Comparing this to a storage unit? See how fast it pays for itself.</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowROI(true);
+                                    setShowNudge(false);
+                                }}
+                                className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-cyan-400 transition-colors"
+                            >
+                                Calc ROI
+                            </button>
+                            <button onClick={() => setShowNudge(false)} className="text-white/20 hover:text-white text-xl">×</button>
+                        </div>
+                    </div>
+                )
+            }
+            {
+                showInsurance && (
+                    <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                        <InsurancePartnerIntegration
+                            spec={spec}
+                            costs={costs}
+                            onClose={() => setShowInsurance(false)}
+                        />
+                    </div>
+                )
+            }
+
+            {
+                showHardware && (
+                    <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                        <ShedTetherHardwarePortal
+                            spec={spec}
+                            onClose={() => setShowHardware(false)}
+                        />
+                    </div>
+                )
+            }
+
+            {
+                showRegional && (
+                    <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                        <RegionalExpansionDashboard
+                            onClose={() => setShowRegional(false)}
+                        />
+                    </div>
+                )
+            }
+
+            {
+                showAnalytics && (
+                    <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500 overflow-y-auto no-scrollbar">
+                        <AdvancedAnalyticsDashboard
+                            spec={spec}
+                            costs={costs}
+                            onClose={() => setShowAnalytics(false)}
+                        />
+                    </div>
+                )
+            }
         </div >
     );
 };

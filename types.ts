@@ -1,7 +1,7 @@
 
 export type WeatherType = 'clear' | 'rain' | 'snow';
 export type MaterialType = 'Vinyl' | 'Cedar' | 'Metal';
-export type ShedStyleType = 'A-Frame' | 'Modern Studio' | 'Gable' | 'Quaker' | 'Lofted Barn' | 'Utility';
+export type ShedStyleType = 'A-Frame' | 'Modern Studio' | 'Gable' | 'Quaker' | 'Lofted Barn' | 'Utility' | 'Nomad Mobile';
 export type TerrainType = 'grass' | 'gravel' | 'concrete';
 export type ViewMode = 'exterior' | 'interior';
 export type RenderMode = '3D' | 'BLUEPRINT';

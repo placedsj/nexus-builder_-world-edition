@@ -1,8 +1,18 @@
-export type BrandId = 'HARPERS_PLACE' | 'PAULS_ROOFING';
+export type BrandId = 'LUNAI' | 'HARPERS_PLACE' | 'PAULS_ROOFING';
 
-export const CURRENT_BRAND: BrandId = 'HARPERS_PLACE'; // Change this line to switch brands
+export const CURRENT_BRAND: BrandId = 'LUNAI'; // Change this line to switch brands
 
 export const BRAND_CONFIG = {
+    LUNAI: {
+        name: "LUNAI Ecosystem",
+        headerTitle: "Architectural",
+        headerSubtitle: "INTELLIGENCE",
+        logoLetter: "L",
+        logoColor: "bg-placed-blue",
+        landingComponent: "ShedLanding",
+        showRoofingProcess: false,
+        showShedBuilder: true
+    },
     HARPERS_PLACE: {
         name: "Harper's Place",
         headerTitle: "Homeowner's",

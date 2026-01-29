@@ -7,7 +7,8 @@ export const SHED_DB: Record<ShedStyleType, ShedData> = {
     'Gable': { price: 5100, rVal: 15, baseArea: 160, walls: "", roof: "", gable: "", floor: "" },
     'Quaker': { price: 7975, rVal: 16, baseArea: 160, walls: "", roof: "", gable: "", floor: "" },
     'Lofted Barn': { price: 8436, rVal: 14, baseArea: 240, walls: "", roof: "", gable: "", floor: "" },
-    'Utility': { price: 6415, rVal: 15, baseArea: 120, walls: "", roof: "", gable: "", floor: "" }
+    'Utility': { price: 6415, rVal: 15, baseArea: 120, walls: "", roof: "", gable: "", floor: "" },
+    'Nomad Mobile': { price: 28500, rVal: 24, baseArea: 160, walls: "", roof: "", gable: "", floor: "" }
 };
 
 export const COMPARISON_DATA = {
@@ -21,6 +22,24 @@ export const COMPARISON_DATA = {
 
 export const SHOWROOM_ITEMS = [
     {
+        id: 'nomad-mobile-o4',
+        style: 'Nomad Mobile' as ShedStyleType,
+        title: "LUNAI Nomad Mobile",
+        label: "FREEDOM CORE",
+        description: "The ultimate tiny home on wheels. 160sqft of architecturally optimized living space. Solar-ready, R24 insulation, and LUNAI command tether integration.",
+        image: "/tiny_home_1.jpg",
+        badge: "ON WHEELS: LAND INDEPENDENT"
+    },
+    {
+        id: 'garden-oasis-12-16',
+        style: 'A-Frame' as ShedStyleType,
+        title: "12' x 16' Garden Oasis",
+        label: "BACKYARD MVP",
+        description: "Spacious and functional. Features dual entry doors, window boxes, and a natural cedar aesthetic. Built to fit your needs and style.",
+        image: "/garden_shed_ad.jpg",
+        badge: "PROMO: starting at $6,849"
+    },
+    {
         id: 'modern-studio-12-20',
         style: 'Modern Studio' as ShedStyleType,
         title: "12' x 20' Modern Studio",
@@ -30,31 +49,13 @@ export const SHOWROOM_ITEMS = [
         badge: "Architect Core V7.2 Pre-Configured"
     },
     {
-        id: 'lofted-12-28',
-        style: 'Lofted Barn' as ShedStyleType,
-        title: "12' x 28' Lofted Barn",
-        label: "STORAGE SUPERSTAR",
-        description: "Massive volume with traditional charm. Upgraded with premium shingles and black-on-white trim. Double lofts included.",
-        image: "/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lofted_barn_render_1769653641837.png",
-        badge: "Heavy Load: 30A Comfort Kit Ready"
-    },
-    {
-        id: 'aframe-10-18',
-        style: 'A-Frame' as ShedStyleType,
-        title: "10' x 18' A-Frame Classic",
-        label: "BACKYARD MVP",
-        description: "Natural cedar finish with iconic steeply pitched roof. A cozy retreat or equipment flagship for the discerning homeowner.",
-        image: "/brain/d00a1654-b7a4-4b43-a697-b3a763181613/a_frame_render_1769653627530.png",
-        badge: "Natural Series: Cedar Edition"
-    },
-    {
-        id: 'quaker-10-16',
-        style: 'Quaker' as ShedStyleType,
-        title: "10' x 16' Quaker Shed",
-        label: "SHEDLOAD OF AWESOME",
-        description: "A fan favorite with saltbox-style asymmetric roof. Perfect for keeping your yard neat while adding a touch of classic charm.",
-        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=2574&auto=format&fit=crop",
-        badge: "STARTING $7,975"
+        id: 'nomad-mobile-o2',
+        style: 'Nomad Mobile' as ShedStyleType,
+        title: "Nomad O2 Series",
+        label: "OFF-GRID COMMAND",
+        description: "Vertical loft variant of the Nomad series. High ceilings, panoramic scanning windows, and dual-axle stability.",
+        image: "/tiny_home_2.jpg",
+        badge: "PREMIUM MOBILE ASSET"
     }
 ];
 

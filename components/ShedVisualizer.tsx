@@ -1,5 +1,4 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ShedSpec, WeatherType, NatureAsset } from '../types';
 import { SHED_DB, TERRAINS, NATURE_ASSETS, DOOR_OPTIONS } from '../constants';
 
@@ -10,6 +9,14 @@ interface ShedVisualizerProps {
 }
 
 const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFeature }) => {
+    const [isScanning, setIsScanning] = useState(false);
+
+    // Trigger scan on spec change
+    useEffect(() => {
+        setIsScanning(true);
+        const timer = setTimeout(() => setIsScanning(false), 1500);
+        return () => clearTimeout(timer);
+    }, [spec]);
     const isBlueprint = spec.renderMode === 'BLUEPRINT';
     const terrainData = TERRAINS.find(t => t.id === spec.terrain) || TERRAINS[0];
 
@@ -105,7 +112,30 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
     return (
         <svg viewBox="0 0 500 500" className={`w-full max-w-[850px] h-auto relative z-10 transition-all duration-700 overflow-visible ${isBlueprint ? 'filter-[url(#sketch)]' : 'drop-shadow-2xl'}`}>
             <defs>
-                <filter id="blurShadow"><feGaussianBlur in="SourceGraphic" stdDeviation="5" /></filter>
+                <filter id="blurShadow">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur" />
+                    <feOffset dx="0" dy="10" result="offsetBlur" />
+                    <feFlood floodColor="#000" floodOpacity="0.4" result="offsetColor" />
+                    <feComposite in="offsetColor" in2="offsetBlur" operator="in" result="shadow" />
+                    <feBlend in="SourceGraphic" in2="shadow" mode="normal" />
+                </filter>
+                <filter id="softShadow">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                    <feOffset dx="0" dy="2" result="offsetblur" />
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.5" />
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+                <linearGradient id="glazingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.6" />
+                    <stop offset="45%" stopColor="#cbd5e1" stopOpacity="0.4" />
+                    <stop offset="55%" stopColor="#f8fafc" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#475569" stopOpacity="0.5" />
+                </linearGradient>
                 <filter id="sketch">
                     <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
                     <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
@@ -137,10 +167,23 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
                 <pattern id="blueprintGrid" width="20" height="20" patternUnits="userSpaceOnUse">
                     <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeOpacity="0.1" strokeWidth="0.5" />
                 </pattern>
+
+                <linearGradient id="scanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="transparent" />
+                    <stop offset="50%" stopColor="#3b82f6" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="transparent" />
+                </linearGradient>
             </defs>
 
             {isBlueprint && (
                 <rect width="100%" height="100%" fill="url(#blueprintGrid)" opacity="0.5" />
+            )}
+
+            {isScanning && !isBlueprint && (
+                <g className="pointer-events-none">
+                    <rect width="500" height="150" fill="url(#scanGradient)" className="animate-scan" />
+                    <line x1="0" y1="0" x2="500" y2="0" stroke="#3b82f6" strokeWidth="2" className="animate-scan drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                </g>
             )}
 
             <g
@@ -153,7 +196,7 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
             >
                 {!isBlueprint && (
                     <g transform={`skewX(${env.shadowSkew}) translate(${env.shadowSkew * -1.5}, 0)`}>
-                        <ellipse cx="0" cy="10" rx={sW / 1.5} ry="35" fill="#000" opacity={effectiveWeather === 'clear' ? "0.4" : "0.15"} filter="url(#blurShadow)" />
+                        <ellipse cx="0" cy="15" rx={sW / 1.2} ry="45" fill="#000" opacity={effectiveWeather === 'clear' ? "0.3" : "0.1"} filter="url(#blurShadow)" />
                     </g>
                 )}
 
@@ -201,6 +244,22 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
                                         <path key={i} d={`M${p}`} fill={isBlueprint ? 'none' : 'white'} stroke={lineColor} strokeWidth="2" />
                                     ))}
                                 </g>
+
+                                {/* Architectural Glazing Windows */}
+                                {spec.style === 'Modern Studio' && (
+                                    <g transform="translate(40, -80)">
+                                        <rect width="25" height="45" fill="#0f172a" stroke={lineColor} strokeWidth="2" rx="2" />
+                                        <rect width="21" height="41" x="2" y="2" fill="url(#glazingGradient)" rx="1" />
+                                        <line x1="2" y1="22" x2="23" y2="22" stroke={lineColor} strokeWidth="1" opacity="0.3" />
+                                    </g>
+                                )}
+                                {(spec.style === 'Quaker' || spec.style === 'A-Frame') && (
+                                    <g transform="translate(-60, -70)">
+                                        <rect width="20" height="20" fill="#0f172a" stroke={lineColor} strokeWidth="2" rx="2" />
+                                        <rect width="16" height="16" x="2" y="2" fill="url(#glazingGradient)" rx="1" />
+                                        <path d="M10 2 V18 M2 10 H18" stroke={lineColor} strokeWidth="1" opacity="0.4" />
+                                    </g>
+                                )}
 
                                 {spec.addons.shedLoo && !env.isInterior && (
                                     <g transform={`translate(${wL - 20}, -15)`}>

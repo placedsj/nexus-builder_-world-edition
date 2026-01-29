@@ -14,6 +14,8 @@ import ExteriorInspectionPage from './components/ExteriorInspectionPage';
 import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
 import PaymentPage from './components/PaymentPage';
+import WeatherOverlay from './components/WeatherOverlay';
+import MedicalTruthHUD from './components/MedicalTruthHUD';
 
 import PaymentSuccessPage from './components/PaymentSuccessPage';
 import BossQuarters from './components/StaffDashboard';
@@ -45,12 +47,12 @@ const Header = ({ onHome, onBuild, onHandbook, onCalculator, onContact, onDashbo
                 }}
                 className="flex items-center gap-3 cursor-pointer group"
             >
-                <div className={`w-10 h-10 ${brand.logoColor} rounded-xl flex items-center justify-center font-black text-white text-xl transition-transform shadow-lg shadow-orange-900/40 ${secretCount > 0 ? 'scale-90 bg-red-600' : 'group-hover:rotate-6'}`}>
+                <div className={`w-10 h-10 ${brand.logoColor} rounded-xl flex items-center justify-center font-black text-white text-xl transition-transform shadow-lg shadow-blue-900/40 ${secretCount > 0 ? 'scale-90 bg-red-600' : 'group-hover:rotate-6'}`}>
                     {secretCount > 0 ? '🔒' : brand.logoLetter}
                 </div>
                 <div className="flex flex-col leading-none">
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{brand.headerTitle}</span>
-                    <span className="text-sm font-bold text-orange-500 tracking-tighter">{brand.headerSubtitle}</span>
+                    <span className="text-sm font-bold text-placed-blue tracking-tighter">{brand.headerSubtitle}</span>
                 </div>
             </div>
             <div className="hidden xl:flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
@@ -66,7 +68,8 @@ const Header = ({ onHome, onBuild, onHandbook, onCalculator, onContact, onDashbo
                 <button onClick={onHandbook} className="hover:text-white transition-colors uppercase">Handbook</button>
                 <button onClick={onBlog} className="hover:text-white transition-colors uppercase">Blog</button>
                 <button onClick={onCalculator} className="hover:text-white transition-colors uppercase">ROI</button>
-                <button onClick={onContact} className="bg-orange-600 text-white px-8 py-3 rounded-full hover:bg-orange-500 transition-all shadow-xl shadow-orange-900/20 text-[10px] font-black tracking-widest uppercase">Get Quote</button>
+                <button onClick={onDashboard} className="hover:text-white transition-colors uppercase text-blue-400">Management</button>
+                <button onClick={onContact} className="bg-placed-blue text-white px-8 py-3 rounded-full hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 text-[10px] font-black tracking-widest uppercase">Get Quote</button>
             </div>
         </nav>
     );
@@ -77,27 +80,27 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
     <div className="min-h-screen bg-[#020617] pt-40 pb-20 px-10 overflow-y-auto no-scrollbar">
         <div className="max-w-7xl mx-auto">
             <div className="mb-20 text-center md:text-left">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-orange-600 mb-6 block">Architectural Gallery</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-placed-blue mb-6 block">Architectural Gallery</span>
                 <h2 className="text-7xl font-black text-white mb-8 tracking-tighter uppercase">Select Template.</h2>
                 <p className="text-white/40 text-xl max-w-2xl font-medium leading-relaxed">Every structure starts as a core geometric primitive. Select your base and unlock the Level 12 Parametric Engine.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {SHOWROOM_ITEMS.map((item) => (
-                    <div key={item.id} className="group relative bg-white/5 rounded-[4rem] overflow-hidden border border-white/10 hover:border-orange-500/50 transition-all cursor-pointer shadow-2xl" onClick={() => onSelect(item.style)}>
+                    <div key={item.id} className="group relative bg-white/5 rounded-[4rem] overflow-hidden border border-white/10 hover:border-placed-blue/50 transition-all cursor-pointer shadow-2xl" onClick={() => onSelect(item.style)}>
                         <div className="aspect-[16/10] overflow-hidden relative">
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 mix-blend-overlay" />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                            {item.badge && <div className="absolute top-10 right-10 bg-orange-600 text-white text-[10px] font-black px-6 py-2 rounded-full uppercase tracking-widest shadow-2xl">{item.badge}</div>}
+                            {item.badge && <div className="absolute top-10 right-10 bg-placed-blue text-white text-[10px] font-black px-6 py-2 rounded-full uppercase tracking-widest shadow-2xl">{item.badge}</div>}
                         </div>
                         <div className="p-16 -mt-24 relative z-10">
-                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-4 block">{item.label}</span>
-                            <h3 className="text-5xl font-black text-white mb-6 group-hover:text-orange-400 transition-colors tracking-tighter leading-tight uppercase">{item.title}</h3>
+                            <span className="text-[10px] font-black text-placed-blue uppercase tracking-[0.3em] mb-4 block">{item.label}</span>
+                            <h3 className="text-5xl font-black text-white mb-6 group-hover:text-placed-blue transition-colors tracking-tighter leading-tight uppercase">{item.title}</h3>
                             <p className="text-white/40 text-lg leading-relaxed mb-10 max-w-md font-medium">{item.description}</p>
                             <div className="flex items-center gap-6">
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest group-hover:text-orange-400 transition-colors">Deploy Parametrics</span>
-                                <div className="h-[1px] flex-1 bg-white/10 group-hover:bg-orange-500/40 transition-colors" />
-                                <span className="text-3xl group-hover:translate-x-4 transition-transform text-white group-hover:text-orange-400">→</span>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest group-hover:text-placed-blue transition-colors">Deploy Parametrics</span>
+                                <div className="h-[1px] flex-1 bg-white/10 group-hover:bg-placed-blue/40 transition-colors" />
+                                <span className="text-3xl group-hover:translate-x-4 transition-transform text-white group-hover:text-placed-blue">→</span>
                             </div>
                         </div>
                     </div>
@@ -107,8 +110,9 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
     </div>
 );
 
-const App: React.FC = () => {
-    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'blog' | 'blog-post' | 'power' | 'partners'>('landing');
+function App() {
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'staff' | 'blog' | 'blog-post' | 'power' | 'partners' | 'medical'>('landing');
     const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
     // URL State Parsing
@@ -145,17 +149,29 @@ const App: React.FC = () => {
     const [initialStyle, setInitialStyle] = useState<ShedStyleType>(initialSpecFromURL?.style || 'Modern Studio');
     const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(initialSpecFromURL);
 
-    // Auto-launch builder if URL params exist
+    // Auto-launch builder if URL params exist or handle internal secret routes
     React.useEffect(() => {
+        const handleHashChange = () => {
+            if (window.location.hash === '#boss-quarters') {
+                setView('staff');
+            } else if (window.location.hash === '#medical-truth') {
+                setView('medical');
+            }
+        };
+
         if (initialSpecFromURL) {
             setView('builder');
         }
+
+        handleHashChange(); // Check on mount
+        window.addEventListener('hashchange', handleHashChange);
 
         const handlePowerNav = () => setView('power');
         const handlePartnerNav = () => setView('partners');
         window.addEventListener('nav-power', handlePowerNav);
         window.addEventListener('nav-partners', handlePartnerNav);
         return () => {
+            window.removeEventListener('hashchange', handleHashChange);
             window.removeEventListener('nav-power', handlePowerNav);
             window.removeEventListener('nav-partners', handlePartnerNav);
         };
@@ -267,6 +283,8 @@ const App: React.FC = () => {
                     )}
                     {view === 'tracking' && <div className="p-40 text-white text-center"><h2 className="text-4xl font-black uppercase mb-4">Order Confirmed!</h2><p className="text-white/40">Your structure is scheduled for fabrication in Saint John.</p></div>}
                     {view === 'admin' && <AdminDashboard />}
+                    {view === 'staff' && <BossQuarters />}
+                    {view === 'medical' && <MedicalTruthHUD onClose={() => setView('staff')} />}
                     {view === 'dashboard' && (
                         <div className="min-h-screen pt-40 pb-20 px-10 bg-[#020617]">
                             <div className="max-w-6xl mx-auto">
@@ -341,7 +359,7 @@ const App: React.FC = () => {
                     <div className="absolute bottom-full right-0 mb-6 w-96 bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 animate-in slide-in-from-bottom-10 fade-in duration-500">
                         <button onClick={() => setChatbotOpen(false)} className="absolute top-6 right-8 text-slate-300 hover:text-slate-900 transition-colors text-xl">✕</button>
                         <div className="flex items-center gap-5 mb-8">
-                            <img src="/brain/d00a1654-b7a4-4b43-a697-b3a763181613/lunai_avatar_core_1769653578022.png" className="w-16 h-16 rounded-2xl shadow-xl border border-blue-500/30 object-cover" alt="LUNAI" />
+                            <img src="/lunai_avatar.png" className="w-16 h-16 rounded-2xl shadow-xl border border-blue-500/30 object-cover" alt="LUNAI" />
                             <div>
                                 <div className="font-black text-slate-900 text-lg leading-none mb-1 uppercase tracking-tighter">LUNAI AI</div>
                                 <div className="text-[10px] font-bold text-blue-500 uppercase tracking-widest flex items-center gap-1">
@@ -356,9 +374,9 @@ const App: React.FC = () => {
                 )}
                 <button
                     onClick={() => setChatbotOpen(!chatbotOpen)}
-                    className="w-20 h-20 bg-orange-600 rounded-[2rem] flex items-center justify-center text-white text-3xl shadow-2xl shadow-orange-900/40 hover:scale-110 active:scale-95 transition-all relative z-10 group"
+                    className="w-20 h-20 bg-placed-blue rounded-[2rem] flex items-center justify-center text-white text-3xl shadow-2xl shadow-blue-900/40 hover:scale-110 active:scale-95 transition-all relative z-10 group"
                 >
-                    <span className="group-hover:rotate-12 transition-transform uppercase font-black text-xs">Help</span>
+                    <span className="group-hover:rotate-12 transition-transform uppercase font-black text-[10px]">LUNAI</span>
                 </button>
             </div>
             <SpeedInsights />
