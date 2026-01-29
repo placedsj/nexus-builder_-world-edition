@@ -15,7 +15,6 @@ import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
 import PaymentPage from './components/PaymentPage';
 import WeatherOverlay from './components/WeatherOverlay';
-import MedicalTruthHUD from './components/MedicalTruthHUD';
 
 import PaymentSuccessPage from './components/PaymentSuccessPage';
 import BossQuarters from './components/StaffDashboard';
@@ -112,7 +111,7 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
 
 function App() {
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'staff' | 'blog' | 'blog-post' | 'power' | 'partners' | 'medical'>('landing');
+    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'staff' | 'blog' | 'blog-post' | 'power' | 'partners'>('landing');
     const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
     // URL State Parsing
@@ -154,8 +153,6 @@ function App() {
         const handleHashChange = () => {
             if (window.location.hash === '#boss-quarters') {
                 setView('staff');
-            } else if (window.location.hash === '#medical-truth') {
-                setView('medical');
             }
         };
 
@@ -284,7 +281,6 @@ function App() {
                     {view === 'tracking' && <div className="p-40 text-white text-center"><h2 className="text-4xl font-black uppercase mb-4">Order Confirmed!</h2><p className="text-white/40">Your structure is scheduled for fabrication in Saint John.</p></div>}
                     {view === 'admin' && <AdminDashboard />}
                     {view === 'staff' && <BossQuarters />}
-                    {view === 'medical' && <MedicalTruthHUD onClose={() => setView('staff')} />}
                     {view === 'dashboard' && (
                         <div className="min-h-screen pt-40 pb-20 px-10 bg-[#020617]">
                             <div className="max-w-6xl mx-auto">
