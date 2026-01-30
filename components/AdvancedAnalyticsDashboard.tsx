@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { jsPDF } from 'jspdf';
 import { ShedSpec, CostEstimate } from '../types';
 
 interface AdvancedAnalyticsDashboardProps {
@@ -184,6 +185,74 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
             totalEstimatedSavings: projections[projections.length - 1]?.cumulativeSavings || 0
         };
     }, [spec, timeframe]);
+
+    const generateAnalyticsPDF = () => {
+        const doc = new jsPDF();
+        const date = new Date().toLocaleDateString();
+
+        // Header
+        doc.setFillColor(15, 23, 42); // slate-900
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("LUNAI Analytics Report", 20, 25);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Generated: ${date}`, 190, 25, { align: 'right' });
+
+        let y = 50;
+
+        // ROI Section
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("Financial ROI Analysis", 20, y);
+        y += 10;
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Timeframe: ${timeframe === '1y' ? '1 Year' : timeframe === '5y' ? '5 Years' : '10 Years'}`, 20, y);
+        y += 10;
+        doc.text(`Total Revenue: $${Math.round(roiAnalysis.totalRevenue).toLocaleString()}`, 20, y);
+        y += 10;
+        doc.text(`Total Maintenance: $${Math.round(roiAnalysis.totalCost).toLocaleString()}`, 20, y);
+        y += 10;
+        doc.text(`Net Profit: $${Math.round(roiAnalysis.totalRevenue - roiAnalysis.totalCost - costs.total).toLocaleString()}`, 20, y);
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.text(`Projected ROI: ${roiAnalysis.finalROI.toFixed(1)}%`, 20, y);
+        y += 20;
+
+        // Maintenance Section
+        doc.setFontSize(16);
+        doc.text("Maintenance Projection", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Total Estimated Cost: $${maintenanceProjection.totalEstimated.toLocaleString()}`, 20, y);
+        y += 10;
+        doc.text(`Average Annual Cost: $${maintenanceProjection.averageAnnual.toLocaleString()}`, 20, y);
+        y += 20;
+
+        // Insurance Section
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("Insurance Savings", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Discount Reason: ${insuranceProjection.discountReason}`, 20, y);
+        y += 10;
+        doc.text(`Total Cumulative Savings: $${Math.round(insuranceProjection.totalEstimatedSavings).toLocaleString()}`, 20, y);
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text("Powered by LUNAI Financial Engine v7.2", 105, 280, { align: 'center' });
+
+        doc.save(`LUNAI_Analytics_${date.replace(/\//g, '-')}.pdf`);
+    };
 
     return (
         <div className="w-full bg-gradient-to-br from-slate-950 via-slate-900 to-black min-h-screen p-8 text-white font-sans overflow-y-auto no-scrollbar">
@@ -606,7 +675,7 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
                         Download your complete financial analysis, share with lenders, or use for tax planning. All numbers backed by LUNAI intelligence.
                     </p>
                     <button
-                        onClick={() => window.print()}
+                        onClick={generateAnalyticsPDF}
                         className="px-10 py-4 bg-white text-blue-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-xl"
                     >
                         Download Full Report (PDF)
