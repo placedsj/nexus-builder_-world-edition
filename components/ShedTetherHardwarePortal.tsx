@@ -4,6 +4,7 @@ import { ShedSpec } from '../types';
 interface ShedTetherHardwarePortalProps {
     spec: ShedSpec;
     onClose?: () => void;
+    onSelect?: (tier: string) => void;
 }
 
 interface TetherKit {
@@ -20,7 +21,7 @@ interface TetherKit {
     cable_type: string;
 }
 
-const ShedTetherHardwarePortal: React.FC<ShedTetherHardwarePortalProps> = ({ spec, onClose }) => {
+const ShedTetherHardwarePortal: React.FC<ShedTetherHardwarePortalProps> = ({ spec, onClose, onSelect }) => {
     const [selectedKit, setSelectedKit] = useState<string>('30A');
     const [showCalculator, setShowCalculator] = useState(false);
     const [distance, setDistance] = useState(50); // feet
@@ -403,7 +404,15 @@ const ShedTetherHardwarePortal: React.FC<ShedTetherHardwarePortalProps> = ({ spe
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <button className="flex-1 py-4 bg-white text-orange-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-xl">
+                        <button
+                            onClick={() => {
+                                if (onSelect) {
+                                    onSelect(selectedKit);
+                                    onClose?.();
+                                }
+                            }}
+                            className="flex-1 py-4 bg-white text-orange-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-xl"
+                        >
                             Order {selectedTether.name}
                         </button>
                         <button className="flex-1 py-4 border border-white/20 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:border-white/40 transition-all">

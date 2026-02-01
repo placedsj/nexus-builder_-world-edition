@@ -70,9 +70,9 @@ export const COLOR_PALETTE = [
 
 export const UPGRADES: UpgradeItem[] = [
     { id: 'ramp', name: 'Aluminium Ramp', cost: 450, icon: '🪜', description: 'Heavy-duty 4ft ramp for easy mower access.' },
-    { id: 'power_20a', name: '20A Creator Kit', cost: 1200, icon: '⚡', description: 'Power for laptop, lights, & fan. Professional hookup included.' },
-    { id: 'power_30a', name: '30A Comfort Kit', cost: 1850, icon: '🔥', description: 'Heat-pump ready. Integrated sub-panel + sub-service connection.' },
-    { id: 'power_50a', name: '50A Pro Service', cost: 3500, icon: '🛠️', description: 'Full workshop power. EV-capable connection. Permits included.' },
+    { id: 'power_20a', name: '20A Creator Kit', cost: 285, icon: '⚡', description: 'Power for laptop, lights, & fan. Professional hookup included.' },
+    { id: 'power_30a', name: '30A Comfort Kit', cost: 895, icon: '🔥', description: 'Heat-pump ready. Integrated sub-panel + sub-service connection.' },
+    { id: 'power_50a', name: '50A Pro Service', cost: 1850, icon: '🛠️', description: 'Full workshop power. EV-capable connection. Permits included.' },
     { id: 'ac', name: 'Climate Control (AC)', cost: 1450, icon: '❄️', description: 'Split-unit AC for summer comfort.' },
     { id: 'solar', name: 'Solar Array', cost: 2200, icon: '☀️', description: 'Roof-mounted solar panels for off-grid lighting.' },
     { id: 'loft', name: 'Lofted Storage', cost: 600, icon: '📦', description: 'Built-in overhead storage mezzanine.' },

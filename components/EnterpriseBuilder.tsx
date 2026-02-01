@@ -204,7 +204,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         }
 
         const addonTotal = UPGRADES.reduce((acc, curr) => spec.addons[curr.id] ? acc + curr.cost : acc, 0);
-        const powerCost = spec.electricalTier === '20A' ? 300 : spec.electricalTier === '30A' ? 900 : spec.electricalTier === 'offgrid' ? 2500 : 0;
+        const powerCost = spec.electricalTier === '20A' ? 285 : spec.electricalTier === '30A' ? 895 : spec.electricalTier === '50A' ? 1850 : spec.electricalTier === 'offgrid' ? 2500 : 0;
         const materialTotal = (Object.values(detailedCosts) as number[]).reduce((a, b) => a + b, 0) + addonTotal + base + powerCost;
         const laborTotal = materialTotal * 0.40;
         return { material: materialTotal, labor: laborTotal, total: materialTotal + laborTotal };
@@ -384,7 +384,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                 <span className="text-xl font-black">{showMobileSidebar ? '✕' : '⚙️'}</span>
             </button>
 
-            <div className={`w-full lg:w-[420px] glass border-r border-white/10 flex flex-col z-[60] fixed lg:relative inset-y-0 left-0 transition-transform duration-500 ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+            <div className={`w-full lg:w-[420px] glass border-r border-white/10 flex flex-col z-[60] fixed lg:relative inset-y-0 left-0 transition-transform duration-500 pt-28 ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className="flex border-b border-white/10">
                     {['lunai', 'structure', 'metrics'].map((tab) => (
                         <button key={tab} onClick={() => setActivePanelTab(tab as any)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${activePanelTab === tab ? 'text-blue-400 bg-blue-600/10 border-b-2 border-blue-400' : 'text-slate-500 hover:text-slate-300'}`}>
@@ -605,8 +605,9 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                                     <div className="space-y-4">
                                         {[
                                             { id: null, name: 'Basic (Extension Cord)', cost: 0, desc: 'Simple pass-through port.' },
-                                            { id: '20A', name: '20A Weekender', cost: 300, desc: 'Lights, laptop, light tools.' },
-                                            { id: '30A', name: 'Current Command (Smart)', cost: 900, desc: '30A Umbilical with smart load manager.' },
+                                        { id: '20A', name: '20A Weekender', cost: 285, desc: 'Lights, laptop, light tools.' },
+                                        { id: '30A', name: 'Current Command (Smart)', cost: 895, desc: '30A Umbilical with smart load manager.' },
+                                        { id: '50A', name: '50A Pro Service', cost: 1850, desc: 'Full workshop power. EV-capable connection.' },
                                             { id: 'offgrid', name: 'Off-Grid / Solar', cost: 2500, desc: 'PointGuard system for remote areas.' }
                                         ].map(tier => (
                                             <button
@@ -771,7 +772,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
 
             <div className="flex-1 relative flex flex-col items-center justify-center overflow-hidden z-10 bg-[radial-gradient(circle_at_50%_50%,_rgba(30,64,175,0.05),_transparent_70%)]">
                 {/* HUD CONTROLS */}
-                <div className="absolute top-8 left-12 right-12 z-50 flex justify-between items-start">
+                <div className="absolute top-32 left-12 right-12 z-50 flex justify-between items-start">
                     <div className="flex gap-4">
                         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors glass px-6 py-2 rounded-full">← BACK</button>
                         <button onClick={() => setShowShare(true)} className="text-[10px] font-black uppercase tracking-[0.2em] text-placed-blue hover:text-white transition-colors bg-placed-blue/10 backdrop-blur px-6 py-2 rounded-full border border-placed-blue/20 hover:bg-placed-blue">SHARE</button>
@@ -880,6 +881,10 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                         <ShedTetherHardwarePortal
                             spec={spec}
                             onClose={() => setShowHardware(false)}
+                            onSelect={(tier) => {
+                                setSpec(prev => ({ ...prev, electricalTier: tier as any }));
+                                setShowHardware(false);
+                            }}
                         />
                     </div>
                 )
